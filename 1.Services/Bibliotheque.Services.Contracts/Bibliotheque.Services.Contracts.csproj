@@ -1,0 +1,12 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\2.Domains\Bibliotheque.Commands.Domains\Bibliotheque.Commands.Domains.csproj" />
+    <ProjectReference Include="..\..\2.Domains\Bibliotheque.Queries.Domains\Bibliotheque.Queries.Domains.csproj" />
+  </ItemGroup>
+
+</Project>

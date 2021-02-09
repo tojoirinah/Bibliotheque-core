@@ -1,0 +1,40 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="AutoFixture" Version="4.15.0" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.5.0" />
+    <PackageReference Include="Moq" Version="4.16.0" />
+    <PackageReference Include="SpecFlow.Plus.LivingDocPlugin" Version="3.6.6" />
+
+    
+    <PackageReference Include="SpecRun.SpecFlow" Version="3.6.2" />
+    
+
+    
+
+    
+
+    
+
+    
+    <PackageReference Include="FluentAssertions" Version="5.10.3" />
+    
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Drivers\" />
+    <Folder Include="Hooks\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\1.Services\Bibliotheque.Services.Contracts\Bibliotheque.Services.Contracts.csproj" />
+    <ProjectReference Include="..\..\1.Services\Bibliotheque.Services.Implementations\Bibliotheque.Services.Implementations.csproj" />
+    <ProjectReference Include="..\..\2.Domains\Bibliotheque.Queries.Domains\Bibliotheque.Queries.Domains.csproj" />
+    <ProjectReference Include="..\..\4.Commons\Bibliotheque-Core.Transverse\Bibliotheque.Transverse.csproj" />
+  </ItemGroup>
+
+</Project>
