@@ -20,6 +20,7 @@ using Moq;
 using TechTalk.SpecFlow;
 using FluentAssertions;
 using Bibliotheque.Services.Implementations.Exceptions;
+using Bibliotheque.Commands.Domains.Enums;
 
 namespace Bibliotheque.Specs.Steps
 {
@@ -57,10 +58,48 @@ namespace Bibliotheque.Specs.Steps
                 return adminUser;
             }
 
+            User SetUpDisabledUser()
+            {
+                var role = _fixture.Build<Role>().With(u => u.Id, 4).Create();
+                var securitySalt = "securitySalt_123456";
+                var password = PasswordContractor.GeneratePassword("123456", securitySalt);
+                var disabledStatus = _fixture.Build<Status>()
+                                             .With(x => x.Id, (byte)EStatus.DISABLED).Create();
+
+                var user = _fixture.Build<User>()
+                               .With(u => u.Login, "member_01@test.com")
+                               .With(u => u.SecuritySalt, securitySalt)
+                               .With(u => u.Password, password)
+                               .With(u => u.Role, role)
+                               .With(u => u.UserStatus, disabledStatus)
+                               .Create();
+                return user;
+            }
+
+            User SetUpWaitingUser()
+            {
+                var role = _fixture.Build<Role>().With(u => u.Id, 4).Create();
+                var securitySalt = "securitySalt_123456";
+                var password = PasswordContractor.GeneratePassword("123456", securitySalt);
+                var waitingStatus = _fixture.Build<Status>()
+                                             .With(x => x.Id, (byte)EStatus.WAITING).Create();
+
+                var user = _fixture.Build<User>()
+                               .With(u => u.Login, "member_02@test.com")
+                               .With(u => u.SecuritySalt, securitySalt)
+                               .With(u => u.Password, password)
+                               .With(u => u.Role, role)
+                               .With(u => u.UserStatus, waitingStatus)
+                               .Create();
+                return user;
+            }
+
             var roleMember = _fixture.Build<Role>().With(u => u.Id, 4).Create();
             var mockQRepository = new Mock<QIUserRepository>();
             var listUser = new List<User>();
             listUser.Add(SetUpAdmin());
+            listUser.Add(SetUpWaitingUser());
+            listUser.Add(SetUpDisabledUser());
             for (var i = 0; i< 10; i++)
             {
                 var user = _fixture.Build<User>()
@@ -103,21 +142,25 @@ namespace Bibliotheque.Specs.Steps
             {
                 _authenticatedUser = await _userService.Authenticate(_req);
             }
-            catch (UserNotFoundException ex)
+            catch (UknownOrDisabledUserException ex)
             {
-                ScenarioContext.Current.Add("UserNotFoundException", ex);
+                ScenarioContext.Current.Add(nameof(UknownOrDisabledUserException), ex);
             }
-            catch(CredentialException ex)
+            catch (CredentialWaitingException ex)
             {
-                ScenarioContext.Current.Add("CredentialException", ex);
+                ScenarioContext.Current.Add(nameof(CredentialWaitingException), ex);
+            }
+            catch (CredentialException ex)
+            {
+                ScenarioContext.Current.Add(nameof(CredentialException), ex);
             }
         }
         
-        [Then(@"throws not found error")]
+        [Then(@"throws uknown or disabled error")]
         public void ThenThrowsNotFoundError()
         {
-            var exception = ScenarioContext.Current["UserNotFoundException"];
-            exception.Should().BeOfType<UserNotFoundException>();
+            var exception = ScenarioContext.Current[nameof(UknownOrDisabledUserException)];
+            exception.Should().BeOfType<UknownOrDisabledUserException>();
         }
         
         [Then(@"user is null")]
@@ -129,10 +172,17 @@ namespace Bibliotheque.Specs.Steps
         [Then(@"throws credential error")]
         public void ThenThrowsCredentialError()
         {
-            var exception = ScenarioContext.Current["CredentialException"];
+            var exception = ScenarioContext.Current[nameof(CredentialException)];
             exception.Should().BeOfType<CredentialException>();
         }
-        
+
+        [Then(@"throws waiting error")]
+        public void ThenWaitingError()
+        {
+            var exception = ScenarioContext.Current[nameof(CredentialWaitingException)];
+            exception.Should().BeOfType<CredentialWaitingException>();
+        }
+
         [Then(@"user is not null")]
         public void ThenUserIsNotNull()
         {

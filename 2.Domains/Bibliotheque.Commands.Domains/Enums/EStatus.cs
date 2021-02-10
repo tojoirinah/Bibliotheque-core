@@ -4,7 +4,7 @@ using System.Text;
 
 namespace Bibliotheque.Commands.Domains.Enums
 {
-    public enum EStatus
+    public enum EStatus : byte
     {
         ENABLED = 1,
         DISABLED = 2,

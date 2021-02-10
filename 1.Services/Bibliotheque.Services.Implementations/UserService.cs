@@ -13,6 +13,8 @@ using Bibliotheque.Commands.Domains.Contracts;
 using Bibliotheque.Services.Contracts.Requests;
 using Bibliotheque.Transverse.Helpers;
 using Bibliotheque.Services.Implementations.Exceptions;
+using System.Data;
+using Bibliotheque.Commands.Domains.Enums;
 
 namespace Bibliotheque.Services.Implementations
 {
@@ -33,9 +35,12 @@ namespace Bibliotheque.Services.Implementations
         {
             var param = new Dapper.DynamicParameters();
             param.Add("login", req.Login);
-            var user = await _queryRepository.RetrieveOneAsync("", param);
-            if (user == null)
-                throw new UserNotFoundException();
+            var user = await _queryRepository.RetrieveOneAsync(StoredProcedure.SP_AUTHENTICATION, param, CommandType.StoredProcedure);
+            if (user == null || user.UserStatus.Id == (byte)EStatus.DISABLED)
+                throw new UknownOrDisabledUserException();
+
+            if (user.UserStatus.Id == (byte)EStatus.WAITING)
+                throw new CredentialWaitingException();
 
             var encryptedPassword = PasswordContractor.GeneratePassword(req.Password, user.SecuritySalt);
             if (user.Password != encryptedPassword)
