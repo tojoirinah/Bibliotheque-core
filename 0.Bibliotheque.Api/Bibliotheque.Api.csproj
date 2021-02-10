@@ -21,7 +21,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\4.Commons\Bibliotheque-Core.Transverse\Bibliotheque.Transverse.csproj" />
-    <ProjectReference Include="..\Commons\Bibliotheque-Core.Transverse\Bibliotheque.Transverse.csproj" />
   </ItemGroup>
 
 
