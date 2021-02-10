@@ -29,10 +29,9 @@ namespace Bibliotheque.Commands.Infrastructures
                 });
 
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 Dispose();
-                throw ex;
             }
         }
 

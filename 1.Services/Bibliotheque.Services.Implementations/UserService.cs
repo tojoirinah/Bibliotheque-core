@@ -77,17 +77,34 @@ namespace Bibliotheque.Services.Implementations
 
         public async Task<QUser> RetrieveOneUserById(long id)
         {
-            return await _queryRepository.RetrieveOneAsync("", null, System.Data.CommandType.Text);
+            var param = new Dapper.DynamicParameters();
+            param.Add("userid", id);
+
+            var user = await _queryRepository.RetrieveOneAsync(StoredProcedure.SP_GETUSER_BY_ID, param, System.Data.CommandType.StoredProcedure);
+            if (user == null)
+                throw new UserNotFoundException();
+
+            return user;
         }
 
         public async Task<QUser> RetrieveOneUserByUserName(string username)
         {
-            return await _queryRepository.RetrieveOneAsync("", null, System.Data.CommandType.Text);
+            var param = new Dapper.DynamicParameters();
+            param.Add("login", username);
+
+            var user =  await _queryRepository.RetrieveOneAsync(StoredProcedure.SP_GETUSER_BY_USERNAME, param, System.Data.CommandType.StoredProcedure);
+            if (user == null)
+                throw new UserNotFoundException();
+
+            return user;
         }
 
-        public async Task<List<QUser>> SearchUser(SearchReq req)
+        public async Task<List<QUser>> SearchUser(string querySearch = "")
         {
-            return await _queryRepository.RetrieveAllAsync("", null, System.Data.CommandType.StoredProcedure);
+            var param = new Dapper.DynamicParameters();
+            param.Add("criteria", querySearch);
+
+            return await _queryRepository.RetrieveAllAsync(StoredProcedure.SP_SEARCH_USERS_BY_CRITERIA, param, System.Data.CommandType.StoredProcedure);
         }
 
         public async Task UnregisterUserAsync(CUser userToRemove)

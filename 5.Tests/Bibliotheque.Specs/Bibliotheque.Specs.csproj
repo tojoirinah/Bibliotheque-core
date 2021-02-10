@@ -28,13 +28,11 @@
   <ItemGroup>
     <Folder Include="Drivers\" />
     <Folder Include="Hooks\" />
-    <Folder Include="Steps\User\" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\..\1.Services\Bibliotheque.Services.Contracts\Bibliotheque.Services.Contracts.csproj" />
     <ProjectReference Include="..\..\1.Services\Bibliotheque.Services.Implementations\Bibliotheque.Services.Implementations.csproj" />
-    <ProjectReference Include="..\..\2.Domains\Bibliotheque.Queries.Domains\Bibliotheque.Queries.Domains.csproj" />
     <ProjectReference Include="..\..\4.Commons\Bibliotheque-Core.Transverse\Bibliotheque.Transverse.csproj" />
   </ItemGroup>
 

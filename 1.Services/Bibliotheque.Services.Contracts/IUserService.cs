@@ -17,7 +17,7 @@ namespace Bibliotheque.Services.Contracts
 
         Task<QUser> RetrieveOneUserByUserName(string username);
         Task<QUser> RetrieveOneUserById(long id);
-        Task<List<QUser>> SearchUser(SearchReq req = null);
+        Task<List<QUser>> SearchUser(string querySearch = "");
         Task<QUser> Authenticate(AuthReq req);
     }
 }
