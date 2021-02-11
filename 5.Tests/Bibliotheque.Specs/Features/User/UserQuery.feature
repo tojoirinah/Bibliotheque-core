@@ -26,7 +26,7 @@
 	Scenario Outline: Search an inexisting user by id
 		When I call  <id> as userId
 		And I call userService RetrieveOneUserById
-		Then throws UserNotFoundException
+		Then Return should be null
 		Examples: 
 		| id   |
 		| 1053 |
@@ -35,7 +35,7 @@
 	Scenario Outline: Search an inexisting user by username
 		When I enter exactly the '<username>' as username
 		And I call userService RetriveOneUserByUsername
-		Then throws UserNotFoundException
+		Then Return should be null
 		Examples: 
 		| username     |
 		| 'babali'     |

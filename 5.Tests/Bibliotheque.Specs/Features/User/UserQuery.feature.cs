@@ -237,7 +237,7 @@ namespace Bibliotheque.Specs.Features.User
   testRunner.And("I call userService RetrieveOneUserById", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line hidden
 #line 29
-  testRunner.Then("throws UserNotFoundException", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
+  testRunner.Then("Return should be null", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
 #line hidden
             }
             this.ScenarioCleanup();
@@ -292,7 +292,7 @@ namespace Bibliotheque.Specs.Features.User
   testRunner.And("I call userService RetriveOneUserByUsername", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line hidden
 #line 38
-  testRunner.Then("throws UserNotFoundException", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
+  testRunner.Then("Return should be null", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
 #line hidden
             }
             this.ScenarioCleanup();

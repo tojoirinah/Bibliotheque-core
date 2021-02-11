@@ -19,7 +19,7 @@ namespace Bibliotheque.Specs.Features.User
     
     [System.CodeDom.Compiler.GeneratedCodeAttribute("TechTalk.SpecFlow", "3.6.0.0")]
     [System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
-    [TechTalk.SpecRun.FeatureAttribute("UserCommand", SourceFile="Features\\User\\UserCommand.feature", SourceLine=0)]
+    [TechTalk.SpecRun.FeatureAttribute("UserCommand", Description="\tThis feature change the status of user", SourceFile="Features\\User\\UserCommand.feature", SourceLine=0)]
     public partial class UserCommandFeature
     {
         
@@ -34,7 +34,7 @@ namespace Bibliotheque.Specs.Features.User
         public virtual void FeatureSetup()
         {
             testRunner = TechTalk.SpecFlow.TestRunnerManager.GetTestRunner();
-            TechTalk.SpecFlow.FeatureInfo featureInfo = new TechTalk.SpecFlow.FeatureInfo(new System.Globalization.CultureInfo("en-US"), "Features/User", "UserCommand", null, ProgrammingLanguage.CSharp, ((string[])(null)));
+            TechTalk.SpecFlow.FeatureInfo featureInfo = new TechTalk.SpecFlow.FeatureInfo(new System.Globalization.CultureInfo("en-US"), "Features/User", "UserCommand", "\tThis feature change the status of user", ProgrammingLanguage.CSharp, ((string[])(null)));
             testRunner.OnFeatureStart(featureInfo);
         }
         
@@ -68,6 +68,363 @@ namespace Bibliotheque.Specs.Features.User
         public virtual void ScenarioCleanup()
         {
             testRunner.CollectScenarioErrors();
+        }
+        
+        public virtual void AddANewInexistingUser(string lastname, string firstname, string login, string password, string securitysalt, string roleid, string statusid, string expectedCount, string[] exampleTags)
+        {
+            string[] tagsOfScenario = exampleTags;
+            System.Collections.Specialized.OrderedDictionary argumentsOfScenario = new System.Collections.Specialized.OrderedDictionary();
+            argumentsOfScenario.Add("lastname", lastname);
+            argumentsOfScenario.Add("firstname", firstname);
+            argumentsOfScenario.Add("login", login);
+            argumentsOfScenario.Add("password", password);
+            argumentsOfScenario.Add("securitysalt", securitysalt);
+            argumentsOfScenario.Add("roleid", roleid);
+            argumentsOfScenario.Add("statusid", statusid);
+            argumentsOfScenario.Add("expectedCount", expectedCount);
+            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Add a new inexisting user", null, tagsOfScenario, argumentsOfScenario, this._featureTags);
+#line 4
+ this.ScenarioInitialize(scenarioInfo);
+#line hidden
+            bool isScenarioIgnored = default(bool);
+            bool isFeatureIgnored = default(bool);
+            if ((tagsOfScenario != null))
+            {
+                isScenarioIgnored = tagsOfScenario.Where(__entry => __entry != null).Where(__entry => String.Equals(__entry, "ignore", StringComparison.CurrentCultureIgnoreCase)).Any();
+            }
+            if ((this._featureTags != null))
+            {
+                isFeatureIgnored = this._featureTags.Where(__entry => __entry != null).Where(__entry => String.Equals(__entry, "ignore", StringComparison.CurrentCultureIgnoreCase)).Any();
+            }
+            if ((isScenarioIgnored || isFeatureIgnored))
+            {
+                testRunner.SkipScenario();
+            }
+            else
+            {
+                this.ScenarioStart();
+#line 5
+  testRunner.When(string.Format("I enter a new User member or visitor or supervisor or librarian with information " +
+                            "{0}, {1}, {2}, {3}, {4}, {5}, {6}", lastname, firstname, login, password, securitysalt, roleid, statusid), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
+#line hidden
+#line 6
+  testRunner.And("I call RegisterUser to store the user", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+#line hidden
+#line 7
+  testRunner.Then(string.Format("list of {0} should be {1}", roleid, expectedCount), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
+#line hidden
+            }
+            this.ScenarioCleanup();
+        }
+        
+        [TechTalk.SpecRun.ScenarioAttribute("Add a new inexisting user, \'membre_lastname_23\'", SourceLine=10)]
+        public virtual void AddANewInexistingUser_Membre_Lastname_23()
+        {
+#line 4
+ this.AddANewInexistingUser("\'membre_lastname_23\'", "\'membre_firstname_23\'", "\'membre_login_23@test.com\'", "\'123456\'", "\'123456\'", "4", "3", "13", ((string[])(null)));
+#line hidden
+        }
+        
+        [TechTalk.SpecRun.ScenarioAttribute("Add a new inexisting user, \'visitor_lastname_24\'", SourceLine=10)]
+        public virtual void AddANewInexistingUser_Visitor_Lastname_24()
+        {
+#line 4
+ this.AddANewInexistingUser("\'visitor_lastname_24\'", "\'visitor_firstname_24\'", "\'visitor_login_24@test.com\'", "\'123456\'", "\'123456\'", "5", "3", "1", ((string[])(null)));
+#line hidden
+        }
+        
+        [TechTalk.SpecRun.ScenarioAttribute("Add a new inexisting user, \'supervisor_lastname_25\'", SourceLine=10)]
+        public virtual void AddANewInexistingUser_Supervisor_Lastname_25()
+        {
+#line 4
+ this.AddANewInexistingUser("\'supervisor_lastname_25\'", "\'supervisor_firstname_25\'", "\'supervisor_login_25@test.com\'", "\'123456\'", "\'123456\'", "2", "1", "1", ((string[])(null)));
+#line hidden
+        }
+        
+        [TechTalk.SpecRun.ScenarioAttribute("Add a new inexisting user, \'librarian_lastname_26\'", SourceLine=10)]
+        public virtual void AddANewInexistingUser_Librarian_Lastname_26()
+        {
+#line 4
+ this.AddANewInexistingUser("\'librarian_lastname_26\'", "\'librarian_firstname_26\'", "\'librarian_login_26@test.com\'", "\'123456\'", "\'123456\'", "3", "3", "1", ((string[])(null)));
+#line hidden
+        }
+        
+        public virtual void AddAnExistingMember(string lastname, string firstname, string login, string password, string securitysalt, string roleid, string statusid, string[] exampleTags)
+        {
+            string[] tagsOfScenario = exampleTags;
+            System.Collections.Specialized.OrderedDictionary argumentsOfScenario = new System.Collections.Specialized.OrderedDictionary();
+            argumentsOfScenario.Add("lastname", lastname);
+            argumentsOfScenario.Add("firstname", firstname);
+            argumentsOfScenario.Add("login", login);
+            argumentsOfScenario.Add("password", password);
+            argumentsOfScenario.Add("securitysalt", securitysalt);
+            argumentsOfScenario.Add("roleid", roleid);
+            argumentsOfScenario.Add("statusid", statusid);
+            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Add an existing member", null, tagsOfScenario, argumentsOfScenario, this._featureTags);
+#line 16
+ this.ScenarioInitialize(scenarioInfo);
+#line hidden
+            bool isScenarioIgnored = default(bool);
+            bool isFeatureIgnored = default(bool);
+            if ((tagsOfScenario != null))
+            {
+                isScenarioIgnored = tagsOfScenario.Where(__entry => __entry != null).Where(__entry => String.Equals(__entry, "ignore", StringComparison.CurrentCultureIgnoreCase)).Any();
+            }
+            if ((this._featureTags != null))
+            {
+                isFeatureIgnored = this._featureTags.Where(__entry => __entry != null).Where(__entry => String.Equals(__entry, "ignore", StringComparison.CurrentCultureIgnoreCase)).Any();
+            }
+            if ((isScenarioIgnored || isFeatureIgnored))
+            {
+                testRunner.SkipScenario();
+            }
+            else
+            {
+                this.ScenarioStart();
+#line 17
+  testRunner.When(string.Format("I enter a new member {0}, {1}, {2}, {3}, {4}, {5}, {6}", lastname, firstname, login, password, securitysalt, roleid, statusid), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
+#line hidden
+#line 18
+  testRunner.And("I call RegisterUser to store the user", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+#line hidden
+#line 19
+  testRunner.Then("throw error UserAlreadyExistException", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
+#line hidden
+            }
+            this.ScenarioCleanup();
+        }
+        
+        [TechTalk.SpecRun.ScenarioAttribute("Add an existing member, \'membre_lastname_27\'", SourceLine=22)]
+        public virtual void AddAnExistingMember_Membre_Lastname_27()
+        {
+#line 16
+ this.AddAnExistingMember("\'membre_lastname_27\'", "\'membre_firstname_27\'", "\'admin@test.com\'", "\'123456\'", "\'123456\'", "1", "3", ((string[])(null)));
+#line hidden
+        }
+        
+        public virtual void UpdateInexistingUser(string id, string lastname, string firstname, string[] exampleTags)
+        {
+            string[] tagsOfScenario = exampleTags;
+            System.Collections.Specialized.OrderedDictionary argumentsOfScenario = new System.Collections.Specialized.OrderedDictionary();
+            argumentsOfScenario.Add("id", id);
+            argumentsOfScenario.Add("lastname", lastname);
+            argumentsOfScenario.Add("firstname", firstname);
+            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Update inexisting user", null, tagsOfScenario, argumentsOfScenario, this._featureTags);
+#line 25
+ this.ScenarioInitialize(scenarioInfo);
+#line hidden
+            bool isScenarioIgnored = default(bool);
+            bool isFeatureIgnored = default(bool);
+            if ((tagsOfScenario != null))
+            {
+                isScenarioIgnored = tagsOfScenario.Where(__entry => __entry != null).Where(__entry => String.Equals(__entry, "ignore", StringComparison.CurrentCultureIgnoreCase)).Any();
+            }
+            if ((this._featureTags != null))
+            {
+                isFeatureIgnored = this._featureTags.Where(__entry => __entry != null).Where(__entry => String.Equals(__entry, "ignore", StringComparison.CurrentCultureIgnoreCase)).Any();
+            }
+            if ((isScenarioIgnored || isFeatureIgnored))
+            {
+                testRunner.SkipScenario();
+            }
+            else
+            {
+                this.ScenarioStart();
+#line 26
+  testRunner.When(string.Format("I enter a new information ({0}, {1}, {2}) of user by id", id, lastname, firstname), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
+#line hidden
+#line 27
+  testRunner.And("I call ChangeUser to update user information", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+#line hidden
+#line 28
+  testRunner.Then("throw error UserNotFoundException", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
+#line hidden
+            }
+            this.ScenarioCleanup();
+        }
+        
+        [TechTalk.SpecRun.ScenarioAttribute("Update inexisting user, 1000", SourceLine=31)]
+        public virtual void UpdateInexistingUser_1000()
+        {
+#line 25
+ this.UpdateInexistingUser("1000", "\'Smith\'", "\'John\'", ((string[])(null)));
+#line hidden
+        }
+        
+        [TechTalk.SpecRun.ScenarioAttribute("Update inexisting user, 1001", SourceLine=31)]
+        public virtual void UpdateInexistingUser_1001()
+        {
+#line 25
+ this.UpdateInexistingUser("1001", "\'Sparrow\'", "\'Jack\'", ((string[])(null)));
+#line hidden
+        }
+        
+        public virtual void UpdateALastnameOrFirstname(string id, string lastname, string firstname, string[] exampleTags)
+        {
+            string[] tagsOfScenario = exampleTags;
+            System.Collections.Specialized.OrderedDictionary argumentsOfScenario = new System.Collections.Specialized.OrderedDictionary();
+            argumentsOfScenario.Add("id", id);
+            argumentsOfScenario.Add("lastname", lastname);
+            argumentsOfScenario.Add("firstname", firstname);
+            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Update a lastname or firstname", null, tagsOfScenario, argumentsOfScenario, this._featureTags);
+#line 35
+ this.ScenarioInitialize(scenarioInfo);
+#line hidden
+            bool isScenarioIgnored = default(bool);
+            bool isFeatureIgnored = default(bool);
+            if ((tagsOfScenario != null))
+            {
+                isScenarioIgnored = tagsOfScenario.Where(__entry => __entry != null).Where(__entry => String.Equals(__entry, "ignore", StringComparison.CurrentCultureIgnoreCase)).Any();
+            }
+            if ((this._featureTags != null))
+            {
+                isFeatureIgnored = this._featureTags.Where(__entry => __entry != null).Where(__entry => String.Equals(__entry, "ignore", StringComparison.CurrentCultureIgnoreCase)).Any();
+            }
+            if ((isScenarioIgnored || isFeatureIgnored))
+            {
+                testRunner.SkipScenario();
+            }
+            else
+            {
+                this.ScenarioStart();
+#line 36
+  testRunner.When(string.Format("I enter a new information ({0}, {1}, {2}) of user by id", id, lastname, firstname), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
+#line hidden
+#line 37
+  testRunner.And("I call ChangeUser to update user information", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+#line hidden
+#line 38
+  testRunner.Then(string.Format("user information updated ({0}, {1}, {2})", id, lastname, firstname), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
+#line hidden
+            }
+            this.ScenarioCleanup();
+        }
+        
+        [TechTalk.SpecRun.ScenarioAttribute("Update a lastname or firstname, 12", SourceLine=41)]
+        public virtual void UpdateALastnameOrFirstname_12()
+        {
+#line 35
+ this.UpdateALastnameOrFirstname("12", "\'Smith\'", "\'John\'", ((string[])(null)));
+#line hidden
+        }
+        
+        [TechTalk.SpecRun.ScenarioAttribute("Update a lastname or firstname, 13", SourceLine=41)]
+        public virtual void UpdateALastnameOrFirstname_13()
+        {
+#line 35
+ this.UpdateALastnameOrFirstname("13", "\'Sparrow\'", "\'Jack\'", ((string[])(null)));
+#line hidden
+        }
+        
+        public virtual void ChangeUserStatus(string id, string statusId, string[] exampleTags)
+        {
+            string[] tagsOfScenario = exampleTags;
+            System.Collections.Specialized.OrderedDictionary argumentsOfScenario = new System.Collections.Specialized.OrderedDictionary();
+            argumentsOfScenario.Add("id", id);
+            argumentsOfScenario.Add("statusId", statusId);
+            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Change user status", null, tagsOfScenario, argumentsOfScenario, this._featureTags);
+#line 45
+ this.ScenarioInitialize(scenarioInfo);
+#line hidden
+            bool isScenarioIgnored = default(bool);
+            bool isFeatureIgnored = default(bool);
+            if ((tagsOfScenario != null))
+            {
+                isScenarioIgnored = tagsOfScenario.Where(__entry => __entry != null).Where(__entry => String.Equals(__entry, "ignore", StringComparison.CurrentCultureIgnoreCase)).Any();
+            }
+            if ((this._featureTags != null))
+            {
+                isFeatureIgnored = this._featureTags.Where(__entry => __entry != null).Where(__entry => String.Equals(__entry, "ignore", StringComparison.CurrentCultureIgnoreCase)).Any();
+            }
+            if ((isScenarioIgnored || isFeatureIgnored))
+            {
+                testRunner.SkipScenario();
+            }
+            else
+            {
+                this.ScenarioStart();
+#line 46
+  testRunner.When(string.Format("I change status of user by userid with id: {0} and status: {1}", id, statusId), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
+#line hidden
+#line 47
+  testRunner.And("I call ChangeUser to update user status", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+#line hidden
+#line 48
+  testRunner.Then(string.Format("user status information updated with id: {0} and status: {1}", id, statusId), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
+#line hidden
+            }
+            this.ScenarioCleanup();
+        }
+        
+        [TechTalk.SpecRun.ScenarioAttribute("Change user status, 10", SourceLine=51)]
+        public virtual void ChangeUserStatus_10()
+        {
+#line 45
+ this.ChangeUserStatus("10", "2", ((string[])(null)));
+#line hidden
+        }
+        
+        [TechTalk.SpecRun.ScenarioAttribute("Change user status, 11", SourceLine=51)]
+        public virtual void ChangeUserStatus_11()
+        {
+#line 45
+ this.ChangeUserStatus("11", "1", ((string[])(null)));
+#line hidden
+        }
+        
+        public virtual void RemoveUser(string id, string[] exampleTags)
+        {
+            string[] tagsOfScenario = exampleTags;
+            System.Collections.Specialized.OrderedDictionary argumentsOfScenario = new System.Collections.Specialized.OrderedDictionary();
+            argumentsOfScenario.Add("id", id);
+            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Remove user", null, tagsOfScenario, argumentsOfScenario, this._featureTags);
+#line 55
+ this.ScenarioInitialize(scenarioInfo);
+#line hidden
+            bool isScenarioIgnored = default(bool);
+            bool isFeatureIgnored = default(bool);
+            if ((tagsOfScenario != null))
+            {
+                isScenarioIgnored = tagsOfScenario.Where(__entry => __entry != null).Where(__entry => String.Equals(__entry, "ignore", StringComparison.CurrentCultureIgnoreCase)).Any();
+            }
+            if ((this._featureTags != null))
+            {
+                isFeatureIgnored = this._featureTags.Where(__entry => __entry != null).Where(__entry => String.Equals(__entry, "ignore", StringComparison.CurrentCultureIgnoreCase)).Any();
+            }
+            if ((isScenarioIgnored || isFeatureIgnored))
+            {
+                testRunner.SkipScenario();
+            }
+            else
+            {
+                this.ScenarioStart();
+#line 56
+  testRunner.When(string.Format("I select user {0}", id), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
+#line hidden
+#line 57
+  testRunner.And("I call service UnregisterUser to remove user", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+#line hidden
+#line 58
+  testRunner.Then(string.Format("user with {0} should be removed", id), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
+#line hidden
+            }
+            this.ScenarioCleanup();
+        }
+        
+        [TechTalk.SpecRun.ScenarioAttribute("Remove user, 13", SourceLine=61)]
+        public virtual void RemoveUser_13()
+        {
+#line 55
+ this.RemoveUser("13", ((string[])(null)));
+#line hidden
+        }
+        
+        [TechTalk.SpecRun.ScenarioAttribute("Remove user, 17", SourceLine=61)]
+        public virtual void RemoveUser_17()
+        {
+#line 55
+ this.RemoveUser("17", ((string[])(null)));
+#line hidden
         }
     }
 }

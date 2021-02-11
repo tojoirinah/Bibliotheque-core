@@ -11,8 +11,9 @@ namespace Bibliotheque.Services.Contracts
     public interface IUserService
     {
         Task RegisterUserAsync(CUser userToRegister);
-        Task ChangeUserAsync(CUser userToUpdate);
-        Task UnregisterUserAsync(CUser userToRemove);
+        Task ChangeUserInformationAsync(UserInformationReq req);
+        Task ChangeUserStatusAsync(UserStatusReq req);
+        Task UnregisterUserAsync(long userId);
         
 
         Task<QUser> RetrieveOneUserByUserName(string username);

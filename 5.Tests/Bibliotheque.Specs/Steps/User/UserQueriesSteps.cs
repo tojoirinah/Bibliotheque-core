@@ -77,37 +77,15 @@ namespace Bibliotheque.Specs.Steps.User
         [When(@"I call userService RetrieveOneUserById")]
         public async Task WhenICallUserServiceRetrieveOneUserById()
         {
-            try
-            {
-                long userId = (long)ScenarioContext.Current["userId"];
-                _user = await _userService.RetrieveOneUserById(userId);
-            }
-            catch (UserNotFoundException ex)
-            {
-                ScenarioContext.Current.Add(nameof(UserNotFoundException), ex);
-            }
-            catch (Exception ex)
-            {
-                throw ex;
-            }
+            long userId = (long)ScenarioContext.Current["userId"];
+            _user = await _userService.RetrieveOneUserById(userId);
         }
 
         [When(@"I call userService RetriveOneUserByUsername")]
         public async Task WhenICallUserServiceRetriveOneUserByUsername()
         {
-            try
-            {
-                var username = ScenarioContext.Current["username"] as string;
-                _user = await _userService.RetrieveOneUserByUserName(username);
-            }
-            catch(UserNotFoundException ex)
-            {
-                ScenarioContext.Current.Add(nameof(UserNotFoundException), ex);
-            }
-            catch (Exception ex)
-            {
-                throw ex;
-            }
+            var username = ScenarioContext.Current["username"] as string;
+            _user = await _userService.RetrieveOneUserByUserName(username);
         }
 
         [Then(@"Response should return the list of user")]
@@ -122,11 +100,10 @@ namespace Bibliotheque.Specs.Steps.User
             _user.Should().NotBeNull();
         }
 
-        [Then(@"throws UserNotFoundException")]
-        public void ThenThrowsUserNotFoundException()
+        [Then(@"Return should be null")]
+        public void ThenResultShouldBeNull()
         {
-            var exception = ScenarioContext.Current[nameof(UserNotFoundException)];
-            exception.Should().BeOfType<UserNotFoundException>();
+            _user.Should().BeNull();
         }
 
     }

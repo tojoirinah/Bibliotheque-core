@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using System.Threading.Tasks;
@@ -14,25 +15,32 @@ using Bibliotheque.Transverse.Helpers;
 
 using Moq;
 
+using TechTalk.SpecFlow;
+
 using CIUserRepository = Bibliotheque.Commands.Domains.Contracts.IUserRepository;
+using CUser = Bibliotheque.Commands.Domains.Entities.User;
 using QIUserRepository = Bibliotheque.Queries.Domains.Contracts.IUserRepository;
 using QUser = Bibliotheque.Queries.Domains.Entities.User;
 
 namespace Bibliotheque.Specs.Steps.User
 {
-    public class BaseUserStep
+    public class BaseUserStep : BaseStep
     {
         protected IUserService _userService;
+        protected IUnitOfWork _uow;
         protected readonly Fixture _fixture = new Fixture();
+        
+        protected QUser _qNewOrUpdateUser;
 
         protected BaseUserStep()
         {
-            SetupUsers();
+            SetupStep();
         }
 
-        void SetupUsers()
+        protected override void SetupStep()
         {
             var status = _fixture.Build<Status>().With(u => u.Id, 1).Create();
+            var roleMember = _fixture.Build<Role>().With(u => u.Id, 4).Create();
 
             QUser SetUpAdmin()
             {
@@ -54,7 +62,6 @@ namespace Bibliotheque.Specs.Steps.User
 
             QUser SetUpDisabledUser()
             {
-                var role = _fixture.Build<Role>().With(u => u.Id, 4).Create();
                 var securitySalt = "securitySalt_123456";
                 var password = PasswordContractor.GeneratePassword("123456", securitySalt);
                 var disabledStatus = _fixture.Build<Status>()
@@ -64,7 +71,7 @@ namespace Bibliotheque.Specs.Steps.User
                                .With(u => u.Login, "member_01@test.com")
                                .With(u => u.SecuritySalt, securitySalt)
                                .With(u => u.Password, password)
-                               .With(u => u.Role, role)
+                               .With(u => u.Role, roleMember)
                                .With(u => u.UserStatus, disabledStatus)
                                .Create();
                 return user;
@@ -72,7 +79,6 @@ namespace Bibliotheque.Specs.Steps.User
 
             QUser SetUpWaitingUser()
             {
-                var role = _fixture.Build<Role>().With(u => u.Id, 4).Create();
                 var securitySalt = "securitySalt_123456";
                 var password = PasswordContractor.GeneratePassword("123456", securitySalt);
                 var waitingStatus = _fixture.Build<Status>()
@@ -82,21 +88,22 @@ namespace Bibliotheque.Specs.Steps.User
                                .With(u => u.Login, "member_02@test.com")
                                .With(u => u.SecuritySalt, securitySalt)
                                .With(u => u.Password, password)
-                               .With(u => u.Role, role)
+                               .With(u => u.Role, roleMember)
                                .With(u => u.UserStatus, waitingStatus)
                                .Create();
                 return user;
             }
 
-            var roleMember = _fixture.Build<Role>().With(u => u.Id, 4).Create();
+            
             var mockQRepository = new Mock<QIUserRepository>();
             var listUser = new List<QUser>();
             listUser.Add(SetUpAdmin());
             listUser.Add(SetUpWaitingUser());
             listUser.Add(SetUpDisabledUser());
-            for (var i = 0; i < 10; i++)
+            for (var i = 10; i < 20; i++)
             {
                 var user = _fixture.Build<QUser>()
+                                .With(u => u.Id, i)
                                .With(u => u.Login, $"member_{i}@test.com")
                                .With(u => u.Role, roleMember)
                                .With(u => u.UserStatus, status)
@@ -104,19 +111,86 @@ namespace Bibliotheque.Specs.Steps.User
                 listUser.Add(user);
             }
 
+            ScenarioContext.Current.Add("listUser", listUser);
+
             // RetrieveAllAsync
-            populateRetrieveAllAsyncMock(mockQRepository, listUser);
+            populateRetrieveAllAsyncMock(mockQRepository);
 
             // RetrieveOneAsync
-            populateRetrieveOneAsync(mockQRepository, listUser);
+            populateRetrieveOneAsync(mockQRepository);
 
 
             var mockUow = new Mock<IUnitOfWork>();
+            mockUow.Setup(x => x.CommitAsync())
+                   .Callback(() => {
+                       var u = listUser.FirstOrDefault(x => x.Id == _qNewOrUpdateUser.Id);
+                       if(u!=null)
+                       {
+                           var l = listUser.Where(x => x.Id != _qNewOrUpdateUser.Id).ToList();
+                           l.Add(_qNewOrUpdateUser);
+                           listUser = l;
+                       }
+                       else
+                       {
+                           listUser.Add(_qNewOrUpdateUser);
+                       }
+                       ScenarioContext.Current["listUser"] = listUser;
+
+                   });
+            _uow = mockUow.Object;
+
+            
             var mockCRepository = new Mock<CIUserRepository>();
-            _userService = new UserService(mockCRepository.Object, mockQRepository.Object, mockUow.Object);
+            
+            // SubscribeItemAsync
+            populateSubscribeItemAsync(mockCRepository);
+
+            // ChangeUserInformationAsync
+            populateChangeUserInformationAsync(mockCRepository);
+
+            // UnregisterUserAsync
+            populateUnregisterUserAsync(mockCRepository);
+
+            _userService = new UserService(_mapper, mockCRepository.Object, mockQRepository.Object, _uow);
         }
 
-        void populateRetrieveOneAsync(Mock<QIUserRepository> mockQRepository, List<QUser> listUser) {
+        void populateSubscribeItemAsync(Mock<CIUserRepository> mockCRepository) {
+            mockCRepository.Setup(x => x.SubscribeItemAsync(It.IsAny<CUser>()))
+                           .Callback<CUser>(u =>
+                           {
+                               _qNewOrUpdateUser = new QUser()
+                               {
+                                   LastName = u.LastName,
+                                   FirstName = u.FirstName,
+                                   DateCreated = DateTime.Now,
+                                   Login = u.Login,
+                                   Password = u.Password,
+                                   Role = new Role() { Id = u.RoleId },
+                                   UserStatus = new Status { Id = u.StatusId }
+                               };
+                           });
+        }
+
+        void populateChangeUserInformationAsync(Mock<CIUserRepository> mockCRepository)
+        {
+            mockCRepository.Setup(x => x.ChangeItemAsync(It.IsAny<CUser>()))
+                           .Callback<CUser>(u =>
+                           {
+                               _qNewOrUpdateUser = new QUser()
+                               {
+                                   Id = u.Id,
+                                   LastName = u.LastName,
+                                   FirstName = u.FirstName,
+                                   DateCreated = DateTime.Now,
+                                   Login = u.Login,
+                                   Password = u.Password,
+                                   Role = new Role() { Id = u.RoleId },
+                                   UserStatus = new Status { Id = u.StatusId }
+                               };
+                           });
+        }
+
+        void populateRetrieveOneAsync(Mock<QIUserRepository> mockQRepository) {
             mockQRepository.Setup(x => x.RetrieveOneAsync(It.IsAny<string>(), It.IsAny<Dapper.DynamicParameters>(), It.IsAny<CommandType>()))
                   .Returns<string, Dapper.DynamicParameters, CommandType>((sp, p, tp) => {
                       string login = string.Empty;
@@ -124,6 +198,8 @@ namespace Bibliotheque.Specs.Steps.User
 
                       try { login = p.Get<dynamic>("login"); } catch { }
                       try { id = p.Get<dynamic>("userid"); } catch { }
+
+                      var listUser = ScenarioContext.Current.Get<List<QUser>>("listUser");
 
                       if (!string.IsNullOrEmpty(login))
                           return Task.FromResult(listUser.FirstOrDefault(x => x.Login == login));
@@ -134,12 +210,23 @@ namespace Bibliotheque.Specs.Steps.User
                   });
         }
 
-        void populateRetrieveAllAsyncMock(Mock<QIUserRepository> mockQRepository, List<QUser> listUser)
+        void populateUnregisterUserAsync(Mock<CIUserRepository> mockCRepository)
+        {
+            mockCRepository.Setup(x => x.UnsubscribeItemAsync(It.IsAny<CUser>()))
+                           .Callback<CUser>(u => {
+                               var listUser = ScenarioContext.Current.Get<List<QUser>>("listUser");
+                               var newListUser = listUser.Where(x => x.Id != u.Id).ToList();
+                               ScenarioContext.Current["listUser"] = newListUser;
+                           });
+        }
+
+        void populateRetrieveAllAsyncMock(Mock<QIUserRepository> mockQRepository)
         {
             mockQRepository.Setup(x => x.RetrieveAllAsync(It.IsAny<string>(), It.IsAny<Dapper.DynamicParameters>(), It.IsAny<CommandType>()))
                          .Returns<string, Dapper.DynamicParameters, CommandType>((sp, p, tp) => {
 
                              string criteria = p.Get<string>("criteria");
+                             var listUser = ScenarioContext.Current.Get<List<QUser>>("listUser");
                              if (string.IsNullOrEmpty(criteria))
                              {
                                  return Task.FromResult(listUser);
