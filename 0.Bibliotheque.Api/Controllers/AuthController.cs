@@ -31,21 +31,28 @@ namespace Bibliotheque.Api.Controllers
         [HttpPost("SignIn")]
         public async Task<IActionResult> Signin([FromBody] AuthenticationReq req)
         {
-            var query = _mapper.Map<GetAuthenticationQuery>(req);
-            var user  = await _mediator.Send(query);
-            var claimIdentity = new ClaimsIdentity(new Claim[] {
+            try
+            {
+                var query = _mapper.Map<GetAuthenticationQuery>(req);
+                var user = await _mediator.Send(query);
+                var claimIdentity = new ClaimsIdentity(new Claim[] {
                     new Claim("UserId",user.Id.ToString()),
                     new Claim("RoleId",user.Role.Id.ToString()),
                     new Claim("UserName",user.Login)
                 });
 
-            var token = JwtTokenHelper.CreateToken(
-                claimIdentity,
-                Int32.Parse(_settings.TokenExpireMinute),
-                _settings.JwtSecretKey
-                );
+                var token = JwtTokenHelper.CreateToken(
+                    claimIdentity,
+                    Int32.Parse(_settings.TokenExpireMinute),
+                    _settings.JwtSecretKey
+                    );
 
-            return Ok(new { Token = token });
+                return Ok(new { Token = token });
+            }
+            catch (Exception ex)
+            {
+                return Problem(ex.Message);
+            }
 
         }
     }
