@@ -7,19 +7,23 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" Version="8.1.1" />
     <PackageReference Include="EntityFramework" Version="6.4.4" />
+    <PackageReference Include="MediatR.Extensions.Microsoft.DependencyInjection" Version="9.0.0" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="3.1.10" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Log4Net.AspNetCore" Version="5.0.0" />
     <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.10.9" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="5.6.3" />
     <PackageReference Include="Swashbuckle.AspNetCore.Newtonsoft" Version="5.6.3" />
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Commands\" />
-    <Folder Include="Queries\" />
-  </ItemGroup>
-
-  <ItemGroup>
+    <ProjectReference Include="..\1.Services\Bibliotheque.Services.Contracts\Bibliotheque.Services.Contracts.csproj" />
+    <ProjectReference Include="..\1.Services\Bibliotheque.Services.Implementations\Bibliotheque.Services.Implementations.csproj" />
+    <ProjectReference Include="..\2.Domains\Bibliotheque.Commands.Domains\Bibliotheque.Commands.Domains.csproj" />
+    <ProjectReference Include="..\2.Domains\Bibliotheque.Queries.Domains\Bibliotheque.Queries.Domains.csproj" />
+    <ProjectReference Include="..\3.Infrastructures\Bibliotheque.Commands.Infrastructures\Bibliotheque.Commands.Infrastructures.csproj" />
+    <ProjectReference Include="..\3.Infrastructures\Bibliotheque.Queries.Infrastructures\Bibliotheque.Queries.Infrastructures.csproj" />
     <ProjectReference Include="..\4.Commons\Bibliotheque-Core.Transverse\Bibliotheque.Transverse.csproj" />
   </ItemGroup>
 

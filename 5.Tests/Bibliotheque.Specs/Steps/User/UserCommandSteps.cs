@@ -96,7 +96,7 @@ namespace Bibliotheque.Specs.Steps.User
             var listUser = ScenarioContext.Current.Get<List<QUser>>("listUser");
             var u = listUser.FirstOrDefault(x => x.Id == id);
             u.Should().NotBeNull();
-            u.UserStatus.Id.Should().Be(statusId);
+            u.StatusId.Should().Be(statusId);
         }
 
         [When(@"I call RegisterUser to store the user")]
@@ -165,7 +165,7 @@ namespace Bibliotheque.Specs.Steps.User
         public void ThenListOfShouldBe(byte roleid, int expectedCount)
         {
             var listUser = ScenarioContext.Current.Get<List<QUser>>("listUser");
-            listUser.Where(x => x.Role.Id == roleid).ToList().Should().HaveCount(expectedCount);
+            listUser.Where(x => x.RoleId == roleid).ToList().Should().HaveCount(expectedCount);
         }
 
         [Then(@"throw error UserAlreadyExistException")]

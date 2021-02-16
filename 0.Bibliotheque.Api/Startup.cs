@@ -1,16 +1,30 @@
 
+using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 
+using AutoMapper;
+
+using Bibliotheque.Api.AutoMapper;
 using Bibliotheque.Api.Helpers;
+using Bibliotheque.Commands.Domains;
+using Bibliotheque.Commands.Domains.Contracts;
+using Bibliotheque.Commands.Infrastructures;
+using Bibliotheque.Services.Contracts;
+using Bibliotheque.Services.Implementations;
+
+using MediatR;
 
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 
@@ -35,6 +49,18 @@ namespace Bibliotheque.Api
             ServiceConfigureSwagger(services);
             services.AddSwaggerGenNewtonsoftSupport();
 
+            // MediatR
+            services.AddMediatR(typeof(Startup));
+
+            // database
+            string assemblyName = typeof(BibliothequeContext).Namespace;
+            services.AddDbContext<BibliothequeContext>(opts =>
+                opts.UseSqlServer(
+                    Configuration["ConnectionStrings:BibliothequeConnection"],
+                    optionBuilder => optionBuilder.MigrationsAssembly(assemblyName)
+                )
+            );
+
             // configure strongly typed settings objects
             var appSettingsSection = Configuration.GetSection("ApplicationSettings");
             services.Configure<ApplicationSettings>(appSettingsSection);
@@ -45,11 +71,27 @@ namespace Bibliotheque.Api
 
             // CORS
             ServiceConfigureCors(services, appSettings);
+
+            // AutoMapper
+            RegisterAutomapperProfiles(services);
+
+            // unit of work
+            UseOneTransactionPerHttpCall(services);
+
+            // Logger
+
+            services.AddScoped<ILoggerService, LoggerService>();
+
+            // IOC
+            RegisterIoc(services, typeof(Bibliotheque.Commands.Infrastructures.Repository<,>));
+            RegisterIoc(services, typeof(Bibliotheque.Queries.Infrastructures.Repository<,>));
+            RegisterIoc(services, typeof(Bibliotheque.Services.Implementations.AbstractService));
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, ILoggerFactory loggerFactory)
         {
+            loggerFactory.AddLog4Net();
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
@@ -169,5 +211,46 @@ namespace Bibliotheque.Api
             });
         }
         #endregion
+
+        #region "IOC"
+        void RegisterIoc(IServiceCollection services, Type baseType)
+        {
+            foreach (Type impl in Assembly.GetAssembly(baseType).GetTypes().Where(x => x.IsClass && !x.IsAbstract && !x.IsGenericType && x.IsSubClassOfGeneric(baseType)))
+            {
+                Type intf = impl.GetInterface("I" + impl.Name);
+                services.AddTransient(intf, impl);
+
+            }
+
+        }
+        #endregion
+
+        #region "AutoMapper"
+        void RegisterAutomapperProfiles(IServiceCollection services)
+        {
+            var config = new MapperConfiguration(cfg =>
+            {
+                foreach (Type type in Assembly.GetAssembly(typeof(BaseProfile)).GetTypes().Where(x => x.IsClass && !x.IsAbstract && x.IsSubclassOf(typeof(BaseProfile))))
+                {
+                    cfg.AddProfile(type);
+                }
+            });
+            services.AddSingleton(config.CreateMapper());
+        }
+        #endregion
+
+        void UseOneTransactionPerHttpCall(IServiceCollection serviceCollection)
+        {
+            serviceCollection.AddScoped<IUnitOfWork, UnitOfWork>(); // must be scope
+
+            //serviceCollection.AddScoped(typeof(UnitOfWorkFilter), typeof(UnitOfWorkFilter));
+
+            //serviceCollection.AddMvc(setup =>
+            //{
+            //    setup.Filters.AddService<UnitOfWorkFilter>(1);
+            //})
+            //.SetCompatibilityVersion(CompatibilityVersion.Version_2_1)
+            //.AddJsonOptions(options => options.SerializerSettings.ContractResolver = new DefaultContractResolver());
+        }
     }
 }

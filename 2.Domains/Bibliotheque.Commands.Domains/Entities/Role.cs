@@ -8,5 +8,15 @@ namespace Bibliotheque.Commands.Domains.Entities
     {
         [StringLength(20)]
         public string Name { get; set; }
+
+        public Role()
+        {
+
+        }
+        public Role(byte id, string name)
+        {
+            Id = id;
+            Name = name;
+        }
     }
 }

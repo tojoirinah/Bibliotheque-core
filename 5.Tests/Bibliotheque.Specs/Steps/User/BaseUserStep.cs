@@ -28,6 +28,7 @@ namespace Bibliotheque.Specs.Steps.User
     {
         protected IUserService _userService;
         protected IUnitOfWork _uow;
+        protected ILoggerService _logger;
         protected readonly Fixture _fixture = new Fixture();
         
         protected QUser _qNewOrUpdateUser;
@@ -54,8 +55,10 @@ namespace Bibliotheque.Specs.Steps.User
                                .With(u => u.LastName, "Administrator")
                                .With(u => u.SecuritySalt, securitySalt)
                                .With(u => u.Password, password)
-                               .With(u => u.Role, role)
-                               .With(u => u.UserStatus, status)
+                               .With(u => u.RoleId, role.Id)
+                               .With(u => u.RoleName, role.Name)
+                               .With(u => u.StatusId, status.Id)
+                               .With(u => u.StatusName, status.Name)
                                .Create();
                 return adminUser;
             }
@@ -71,8 +74,10 @@ namespace Bibliotheque.Specs.Steps.User
                                .With(u => u.Login, "member_01@test.com")
                                .With(u => u.SecuritySalt, securitySalt)
                                .With(u => u.Password, password)
-                               .With(u => u.Role, roleMember)
-                               .With(u => u.UserStatus, disabledStatus)
+                               .With(u => u.RoleId, roleMember.Id)
+                               .With(u => u.RoleName, roleMember.Name)
+                               .With(u => u.StatusId, disabledStatus.Id)
+                               .With(u => u.StatusName, disabledStatus.Name)
                                .Create();
                 return user;
             }
@@ -88,13 +93,16 @@ namespace Bibliotheque.Specs.Steps.User
                                .With(u => u.Login, "member_02@test.com")
                                .With(u => u.SecuritySalt, securitySalt)
                                .With(u => u.Password, password)
-                               .With(u => u.Role, roleMember)
-                               .With(u => u.UserStatus, waitingStatus)
+                               .With(u => u.RoleId, roleMember.Id)
+                               .With(u => u.RoleName, roleMember.Name)
+                               .With(u => u.StatusId, waitingStatus.Id)
+                               .With(u => u.StatusName, waitingStatus.Name)
                                .Create();
                 return user;
             }
 
-            
+            var mockLogger = new Mock<ILoggerService>();
+            _logger = mockLogger.Object;
             var mockQRepository = new Mock<QIUserRepository>();
             var listUser = new List<QUser>();
             listUser.Add(SetUpAdmin());
@@ -105,8 +113,10 @@ namespace Bibliotheque.Specs.Steps.User
                 var user = _fixture.Build<QUser>()
                                 .With(u => u.Id, i)
                                .With(u => u.Login, $"member_{i}@test.com")
-                               .With(u => u.Role, roleMember)
-                               .With(u => u.UserStatus, status)
+                               .With(u => u.RoleId, roleMember.Id)
+                               .With(u => u.RoleName, roleMember.Name)
+                               .With(u => u.StatusId, status.Id)
+                               .With(u => u.StatusName, status.Name)
                                .Create();
                 listUser.Add(user);
             }
@@ -151,7 +161,7 @@ namespace Bibliotheque.Specs.Steps.User
             // UnregisterUserAsync
             populateUnregisterUserAsync(mockCRepository);
 
-            _userService = new UserService(_mapper, mockCRepository.Object, mockQRepository.Object, _uow);
+            _userService = new UserService(_mapper, _logger, mockCRepository.Object, mockQRepository.Object, _uow);
         }
 
         void populateSubscribeItemAsync(Mock<CIUserRepository> mockCRepository) {
@@ -165,8 +175,8 @@ namespace Bibliotheque.Specs.Steps.User
                                    DateCreated = DateTime.Now,
                                    Login = u.Login,
                                    Password = u.Password,
-                                   Role = new Role() { Id = u.RoleId },
-                                   UserStatus = new Status { Id = u.StatusId }
+                                   RoleId = u.RoleId,
+                                   StatusId = u.StatusId 
                                };
                            });
         }
@@ -184,8 +194,8 @@ namespace Bibliotheque.Specs.Steps.User
                                    DateCreated = DateTime.Now,
                                    Login = u.Login,
                                    Password = u.Password,
-                                   Role = new Role() { Id = u.RoleId },
-                                   UserStatus = new Status { Id = u.StatusId }
+                                   RoleId = u.RoleId ,
+                                   StatusId = u.StatusId 
                                };
                            });
         }

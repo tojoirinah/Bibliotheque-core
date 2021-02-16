@@ -16,9 +16,13 @@ namespace Bibliotheque.Queries.Domains.Entities
 
         public string SecuritySalt { get; set; }
 
-        public virtual Role Role { get; set; }
+        public byte RoleId { get; set; }
 
-        public virtual Status UserStatus { get; set; }
+        public string RoleName { get; set; }
+
+        public byte StatusId { get; set; }
+
+        public string StatusName { get; set; }
     }
 
 }
