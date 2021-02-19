@@ -80,13 +80,11 @@ namespace Bibliotheque.Services.Implementations
                 var userTopUpdateCmd = _mapper.Map<CUser>(userToUpdate);
                 userTopUpdateCmd.LastName = req.LastName;
                 userTopUpdateCmd.FirstName = req.FirstName;
-                await _cmdRepository.ChangeItemAsync(userTopUpdateCmd)
-                    .ContinueWith((prev) => _uow.CommitAsync());
+                await _cmdRepository.ChangeItemAsync(userTopUpdateCmd);
             }
             catch (Exception ex)
             {
                 _logger.SetError($"Message : {ex.Message} \n StackTrace : {ex.StackTrace} \n InnerException : {(ex.InnerException != null ? ex.InnerException.Message : string.Empty)}");
-                await _uow.RollBackAsync();
                 throw ex;
             }
             _logger.SetDebug($"--- ENDING {System.Reflection.MethodBase.GetCurrentMethod().Name } ---");
@@ -107,13 +105,11 @@ namespace Bibliotheque.Services.Implementations
 
                 var userTopUpdateCmd = _mapper.Map<CUser>(userToUpdate);
                 userTopUpdateCmd.StatusId = req.StatusId;
-                await _cmdRepository.ChangeItemAsync(userTopUpdateCmd)
-                    .ContinueWith((prev) => _uow.CommitAsync());
+                await _cmdRepository.ChangeItemAsync(userTopUpdateCmd);
             }
             catch (Exception ex)
             {
                 _logger.SetError($"Message : {ex.Message} \n StackTrace : {ex.StackTrace} \n InnerException : {(ex.InnerException != null ? ex.InnerException.Message : string.Empty)}");
-                await _uow.RollBackAsync();
                 throw ex;
             }
             _logger.SetDebug($"--- ENDING {System.Reflection.MethodBase.GetCurrentMethod().Name } ---");
@@ -131,13 +127,11 @@ namespace Bibliotheque.Services.Implementations
                     throw new UserAlreadyExistsException();
                 }
                     
-                await _cmdRepository.SubscribeItemAsync(userToRegister)
-                                    .ContinueWith((prev) => _uow.CommitAsync());
+                await _cmdRepository.SubscribeItemAsync(userToRegister);
             }
             catch (Exception ex)
             {
                 _logger.SetError($"Message : {ex.Message} \n StackTrace : {ex.StackTrace} \n InnerException : {(ex.InnerException != null ? ex.InnerException.Message : string.Empty)}");
-                await _uow.RollBackAsync();
                 throw ex;
             }
             _logger.SetDebug($"--- ENDING {System.Reflection.MethodBase.GetCurrentMethod().Name } ---");
@@ -160,7 +154,7 @@ namespace Bibliotheque.Services.Implementations
             var param = new Dapper.DynamicParameters();
             param.Add("login", username);
 
-           var user =  await _queryRepository.RetrieveOneAsync(StoredProcedure.SP_GETUSER_BY_USERNAME, param, System.Data.CommandType.StoredProcedure);
+           var user =  await _queryRepository.RetrieveOneAsync(StoredProcedure.SP_AUTHENTICATION, param, System.Data.CommandType.StoredProcedure);
             _logger.SetDebug($"--- ENDING {System.Reflection.MethodBase.GetCurrentMethod().Name } ---");
             return user;
         }
@@ -171,7 +165,7 @@ namespace Bibliotheque.Services.Implementations
             var param = new Dapper.DynamicParameters();
             param.Add("criteria", querySearch);
 
-            var list =  await _queryRepository.RetrieveAllAsync(StoredProcedure.SP_SEARCH_USERS_BY_CRITERIA, param, System.Data.CommandType.StoredProcedure);
+            var list =  await _queryRepository.RetrieveAllAsync(StoredProcedure.SP_SEARCH_USER, param, System.Data.CommandType.StoredProcedure);
             _logger.SetDebug($"--- ENDING {System.Reflection.MethodBase.GetCurrentMethod().Name } ---");
             return list;
         }
@@ -191,7 +185,6 @@ namespace Bibliotheque.Services.Implementations
             catch(Exception ex)
             {
                 _logger.SetError($"Message : {ex.Message} \n StackTrace : {ex.StackTrace} \n InnerException : {(ex.InnerException != null ? ex.InnerException.Message : string.Empty)}");
-                await _uow.RollBackAsync();
                 throw ex;
             }
             _logger.SetDebug($"--- ENDING {System.Reflection.MethodBase.GetCurrentMethod().Name } ---");

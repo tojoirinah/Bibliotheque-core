@@ -15,18 +15,17 @@ using MediatR;
 
 namespace Bibliotheque.Api.Handlers.Auth
 {
-    public class GetAuthenticationQueryHandler : IRequestHandler<GetAuthenticationQuery, UserInformationResp>
+    public class GetAuthenticationRequestHandler : AbstractRequestHandler,  IRequestHandler<GetAuthenticationRequest, UserInformationResp>
     {
         private readonly IUserService _userService;
-        private readonly IMapper _mapper;
 
-        public GetAuthenticationQueryHandler(IMapper mapper, IUserService userService)
+        public GetAuthenticationRequestHandler(IMapper mapper, IUserService userService) : base(mapper)
         {
             _userService = userService;
             _mapper = mapper;
         }
 
-        public async Task<UserInformationResp> Handle(GetAuthenticationQuery request, CancellationToken cancellationToken)
+        public async Task<UserInformationResp> Handle(GetAuthenticationRequest request, CancellationToken cancellationToken)
         {
             try
             {

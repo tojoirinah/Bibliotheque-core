@@ -27,7 +27,7 @@ namespace Bibliotheque.Specs.Steps.User
     public class BaseUserStep : BaseStep
     {
         protected IUserService _userService;
-        protected IUnitOfWork _uow;
+        
         protected ILoggerService _logger;
         protected readonly Fixture _fixture = new Fixture();
         
@@ -133,6 +133,18 @@ namespace Bibliotheque.Specs.Steps.User
             var mockUow = new Mock<IUnitOfWork>();
             mockUow.Setup(x => x.CommitAsync())
                    .Callback(() => {
+                       List<QUser> newListUser = null;
+                       try { 
+                           newListUser = ScenarioContext.Current.Get<List<QUser>>("newListUser"); 
+                       } catch { }
+                        
+                       if (newListUser != null)
+                       {
+                           ScenarioContext.Current["listUser"] = newListUser;
+                           ScenarioContext.Current["newListUser"] = null;
+                           return;
+                       }
+
                        var u = listUser.FirstOrDefault(x => x.Id == _qNewOrUpdateUser.Id);
                        if(u!=null)
                        {
@@ -226,7 +238,7 @@ namespace Bibliotheque.Specs.Steps.User
                            .Callback<CUser>(u => {
                                var listUser = ScenarioContext.Current.Get<List<QUser>>("listUser");
                                var newListUser = listUser.Where(x => x.Id != u.Id).ToList();
-                               ScenarioContext.Current["listUser"] = newListUser;
+                               ScenarioContext.Current["newListUser"] = newListUser;
                            });
         }
 

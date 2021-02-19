@@ -1,6 +1,6 @@
-﻿namespace Bibliotheque.Api.Req.Users
+﻿namespace Bibliotheque.Api.Req.Members
 {
-    public class UpdatePasswordUserReq : IBaseReq
+    public class UpdatePasswordMemberReq : IBaseReq
     {
         public long Id { get; set; }
 

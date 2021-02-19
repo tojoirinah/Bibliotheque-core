@@ -8,6 +8,6 @@
 
         public static string SP_GETUSER_BY_USERNAME => "sp_getUser_by_username";
 
-        public static string SP_SEARCH_USERS_BY_CRITERIA => "sp_serach_users_by_criteria";
+        public static string SP_SEARCH_USER => "sp_SearchUser";
     }
 }

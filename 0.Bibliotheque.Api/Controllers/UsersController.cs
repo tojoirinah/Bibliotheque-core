@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 
 using AutoMapper;
@@ -8,9 +6,7 @@ using AutoMapper;
 using MediatR;
 
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
 
 namespace Bibliotheque.Api.Controllers
 {
@@ -24,25 +20,44 @@ namespace Bibliotheque.Api.Controllers
         {
         }
 
-        readonly IEnumerable<User> _list = new List<User>()
-            {
-                new User(){ Id = Guid.NewGuid(), Name = "Statam", FirstName = "Jason"},
-                new User(){ Id = Guid.NewGuid(), Name = "Lee", FirstName = "Bruce"},
-                new User(){ Id = Guid.NewGuid(), Name = "Stalone", FirstName = "Sylvester"},
-                new User(){ Id = Guid.NewGuid(), Name = "Diesel", FirstName = "Vin"},
-            };
 
         [HttpGet]
-        public IEnumerable<User> Get()
+        public async Task<IActionResult> Get([FromQuery] string criteria)
         {
-            return _list;
+            try
+            {
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+                return Problem(ex.Message);
+            }
         }
 
-        [HttpGet("{name}")]
-        public User GetByName(string name)
+        [HttpGet("Search/{criteria}")]
+        public async Task<IActionResult> Search(string criteria)
         {
-            var user = _list.FirstOrDefault(x => x.Name == name);
-            return user;
+            try
+            {
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+                return Problem(ex.Message);
+            }
+        }
+
+        [HttpGet("{id}")]
+        public async Task<IActionResult> GetById(long id)
+        {
+            try
+            {
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+                return Problem(ex.Message);
+            }
         }
     }
 }

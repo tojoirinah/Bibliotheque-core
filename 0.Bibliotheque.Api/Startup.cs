@@ -20,6 +20,7 @@ using MediatR;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -27,6 +28,8 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+
+using Newtonsoft.Json.Serialization;
 
 namespace Bibliotheque.Api
 {
@@ -74,6 +77,7 @@ namespace Bibliotheque.Api
 
             // AutoMapper
             RegisterAutomapperProfiles(services);
+
 
             // unit of work
             UseOneTransactionPerHttpCall(services);
@@ -243,14 +247,17 @@ namespace Bibliotheque.Api
         {
             serviceCollection.AddScoped<IUnitOfWork, UnitOfWork>(); // must be scope
 
-            //serviceCollection.AddScoped(typeof(UnitOfWorkFilter), typeof(UnitOfWorkFilter));
+            serviceCollection.AddScoped(typeof(UnitOfWorkFilter), typeof(UnitOfWorkFilter));
 
-            //serviceCollection.AddMvc(setup =>
-            //{
-            //    setup.Filters.AddService<UnitOfWorkFilter>(1);
-            //})
-            //.SetCompatibilityVersion(CompatibilityVersion.Version_2_1)
-            //.AddJsonOptions(options => options.SerializerSettings.ContractResolver = new DefaultContractResolver());
+            serviceCollection.AddMvc(setup =>
+            {
+                setup.Filters.AddService<UnitOfWorkFilter>(1);
+            })
+            .SetCompatibilityVersion(CompatibilityVersion.Version_2_1)
+            .AddJsonOptions(options => {
+                options.JsonSerializerOptions.PropertyNamingPolicy = null;
+                options.JsonSerializerOptions.DictionaryKeyPolicy = null;
+            });
         }
     }
 }

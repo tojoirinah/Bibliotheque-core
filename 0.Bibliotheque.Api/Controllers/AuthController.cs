@@ -33,7 +33,7 @@ namespace Bibliotheque.Api.Controllers
         {
             try
             {
-                var query = _mapper.Map<GetAuthenticationQuery>(req);
+                var query = _mapper.Map<GetAuthenticationRequest>(req);
                 var user = await _mediator.Send(query);
                 var claimIdentity = new ClaimsIdentity(new Claim[] {
                     new Claim("UserId",user.Id.ToString()),

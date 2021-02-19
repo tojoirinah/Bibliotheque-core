@@ -105,6 +105,7 @@ namespace Bibliotheque.Specs.Steps.User
             try
             {
                 await _userService.RegisterUserAsync(_newOrUpdatedUser);
+                await _uow.CommitAsync();
             }
             catch (UserAlreadyExistsException ex) {
                 ScenarioContext.Current.Add(nameof(UserAlreadyExistsException), ex);
@@ -127,6 +128,7 @@ namespace Bibliotheque.Specs.Steps.User
             try
             {
                 await _userService.ChangeUserInformationAsync(_uInfoReq);
+                await _uow.CommitAsync();
             }
             catch(UserNotFoundException ex)
             {
@@ -144,6 +146,7 @@ namespace Bibliotheque.Specs.Steps.User
             try
             {
                 await _userService.ChangeUserStatusAsync(_uStatusReq);
+                await _uow.CommitAsync();
             }
             catch (UserNotFoundException ex)
             {
@@ -159,6 +162,7 @@ namespace Bibliotheque.Specs.Steps.User
         public async Task WhenICallServiceUnregisterUserToRemoveUser()
         {
             await _userService.UnregisterUserAsync(_userId);
+            await _uow.CommitAsync();
         }
 
         [Then(@"list of (.*) should be (.*)")]

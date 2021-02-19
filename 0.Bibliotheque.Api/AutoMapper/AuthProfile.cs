@@ -12,7 +12,7 @@ namespace Bibliotheque.Api.AutoMapper
     {
         public AuthProfile()
         {
-            CreateMap<AuthenticationReq, GetAuthenticationQuery>();
+            CreateMap<AuthenticationReq, GetAuthenticationRequest>();
         }
     }
 }

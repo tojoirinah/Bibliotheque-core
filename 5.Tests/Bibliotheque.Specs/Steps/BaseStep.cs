@@ -4,6 +4,7 @@ using System.Reflection;
 
 using AutoMapper;
 
+using Bibliotheque.Commands.Domains.Contracts;
 using Bibliotheque.Services.Contracts.Profiles;
 
 namespace Bibliotheque.Specs.Steps
@@ -11,6 +12,7 @@ namespace Bibliotheque.Specs.Steps
     public abstract class BaseStep
     {
         protected IMapper _mapper;
+        protected IUnitOfWork _uow;
 
         protected abstract void SetupStep();
 
@@ -28,6 +30,7 @@ namespace Bibliotheque.Specs.Steps
                 IMapper mapper = mappingConfig.CreateMapper();
                 _mapper = mapper;
             }
+
         }
     }
 }
