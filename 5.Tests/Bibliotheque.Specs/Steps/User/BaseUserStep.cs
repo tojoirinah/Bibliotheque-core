@@ -150,6 +150,8 @@ namespace Bibliotheque.Specs.Steps.User
                            u.SecuritySalt = _qNewOrUpdateUser.SecuritySalt;
                            u.LastName = _qNewOrUpdateUser.LastName;
                            u.FirstName = _qNewOrUpdateUser.FirstName;
+                           u.StatusId = _qNewOrUpdateUser.StatusId;
+                           u.RoleId = _qNewOrUpdateUser.RoleId;
                        }
                        else
                        {
