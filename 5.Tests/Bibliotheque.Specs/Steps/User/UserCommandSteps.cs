@@ -3,13 +3,15 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-using Bibliotheque.Services.Contracts.Requests;
+using Bibliotheque.Services.Contracts.Requests.Statuses;
+using Bibliotheque.Services.Contracts.Requests.Users;
 using Bibliotheque.Services.Implementations.Exceptions;
 using Bibliotheque.Transverse.Helpers;
 
 using FluentAssertions;
 
 using TechTalk.SpecFlow;
+
 using CUser = Bibliotheque.Commands.Domains.Entities.User;
 using QUser = Bibliotheque.Queries.Domains.Entities.User;
 
@@ -19,8 +21,8 @@ namespace Bibliotheque.Specs.Steps.User
     public class UserCommandSteps : BaseUserStep
     {
         private CUser _newOrUpdatedUser;
-        private UserInformationReq _uInfoReq;
-        private UserStatusReq _uStatusReq;
+        private UpdateInformationUserReq _uInfoReq;
+        private UpdateUserStatusReq _uStatusReq;
         private long _userId;
 
         public UserCommandSteps() : base()
@@ -37,12 +39,12 @@ namespace Bibliotheque.Specs.Steps.User
                 FirstName = firstname,
                 Login = login,
                 Password = PasswordContractor.GeneratePassword(password, securitySalt),
-                SecuritySalt= securitySalt,
+                SecuritySalt = securitySalt,
                 RoleId = roleId,
                 StatusId = statusId
             };
         }
-        
+
         [When(@"I enter a new member '(.*)', '(.*)', '(.*)', '(.*)', '(.*)', (.*), (.*)")]
         public void WhenIEnterANewMember(string lastname, string firstname, string login, string password, string securitySalt, byte roleId, byte statusId)
         {
@@ -57,20 +59,20 @@ namespace Bibliotheque.Specs.Steps.User
                 StatusId = statusId
             };
         }
-        
-        
+
+
         [When(@"I change status of user by userid with id: (.*) and status: (.*)")]
         public void WhenIChangeStatusOfUserByUseridWithIdAndStatus(long id, byte statusId)
         {
-            _uStatusReq = new UserStatusReq() { Id = id, StatusId = statusId };
+            _uStatusReq = new UpdateUserStatusReq() { UserId = id, NewStatusId = statusId };
         }
-        
+
         [When(@"I select user (.*)")]
         public void WhenISelectUser(long id)
         {
             _userId = id;
         }
-        
+
         [Then(@"user information updated \((.*), '(.*)', '(.*)'\)")]
         public async Task ThenUserInformationUpdated(long id, string lastname, string firstname)
         {
@@ -80,20 +82,20 @@ namespace Bibliotheque.Specs.Steps.User
                 user.LastName.Should().Be(lastname);
                 user.FirstName.Should().Be(firstname);
             }
-            catch(UserNotFoundException ex)
+            catch (UserNotFoundException ex)
             {
                 throw ex;
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 throw ex;
             }
         }
-        
+
         [Then(@"user status information updated with id: (.*) and status: (.*)")]
         public void ThenUserStatusInformationUpdatedWithIdAndStatus(long id, byte statusId)
         {
-            var listUser = ScenarioContext.Current.Get<List<QUser>>("listUser");
+            var listUser = GetListUser(LIST_USER);
             var u = listUser.FirstOrDefault(x => x.Id == id);
             u.Should().NotBeNull();
             u.StatusId.Should().Be(statusId);
@@ -107,7 +109,8 @@ namespace Bibliotheque.Specs.Steps.User
                 await _userService.RegisterUserAsync(_newOrUpdatedUser);
                 await _uow.CommitAsync();
             }
-            catch (UserAlreadyExistsException ex) {
+            catch (UserAlreadyExistsException ex)
+            {
                 ScenarioContext.Current.Add(nameof(UserAlreadyExistsException), ex);
             }
             catch (Exception ex)
@@ -119,7 +122,7 @@ namespace Bibliotheque.Specs.Steps.User
         [When(@"I enter a new information \((.*), '(.*)', '(.*)'\) of user by id")]
         public void WhenIEnterANewInformationOfUserById(long id, string lastname, string firstname)
         {
-            _uInfoReq = new UserInformationReq() { Id = id, LastName = lastname, FirstName = firstname };
+            _uInfoReq = new UpdateInformationUserReq() { Id = id, LastName = lastname, FirstName = firstname };
         }
 
         [When(@"I call ChangeUser to update user information")]
@@ -130,11 +133,11 @@ namespace Bibliotheque.Specs.Steps.User
                 await _userService.ChangeUserInformationAsync(_uInfoReq);
                 await _uow.CommitAsync();
             }
-            catch(UserNotFoundException ex)
+            catch (UserNotFoundException ex)
             {
                 ScenarioContext.Current.Add(nameof(UserNotFoundException), ex);
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 ScenarioContext.Current.Add(nameof(Exception), ex);
             }
@@ -168,7 +171,7 @@ namespace Bibliotheque.Specs.Steps.User
         [Then(@"list of (.*) should be (.*)")]
         public void ThenListOfShouldBe(byte roleid, int expectedCount)
         {
-            var listUser = ScenarioContext.Current.Get<List<QUser>>("listUser");
+            var listUser = GetListUser(LIST_USER);
             listUser.Where(x => x.RoleId == roleid).ToList().Should().HaveCount(expectedCount);
         }
 
@@ -189,9 +192,52 @@ namespace Bibliotheque.Specs.Steps.User
         [Then(@"user with (.*) should be removed")]
         public void ThenUserWithShouldBeRemoved(long p0)
         {
-            var listUser = ScenarioContext.Current.Get<List<QUser>>("listUser");
+            var listUser = GetListUser(LIST_USER);
             var u = listUser.FirstOrDefault(x => x.Id == p0);
             u.Should().BeNull();
+        }
+
+        [When(@"I enter new password '(.*)' for selected user (.*) with the '(.*)'")]
+        public void WhenIEnterNewPasswordForSelectedUserWithThe(string newPassword, long userid, string oldPassword)
+        {
+            ScenarioContext.Current.Add("changePassword", new UpdatePasswordUserReq { Id = userid, 
+                                                                NewPassword = newPassword, 
+                                                                OldPassword = oldPassword });
+        }
+
+        [When(@"I call service ChangePassword")]
+        public async Task WhenICallServiceChangePassword()
+        {
+            try
+            {
+                var req = ScenarioContext.Current["changePassword"] as UpdatePasswordUserReq;
+                await _userService.ChangeUserPasswordAsync(req);
+                await _uow.CommitAsync();
+            }
+            catch(CredentialException ex)
+            {
+                ScenarioContext.Current.Add(nameof(CredentialException), ex);
+            }
+            catch(Exception ex)
+            {
+                ScenarioContext.Current.Add(nameof(Exception), ex);
+            }
+        }
+
+        [Then(@"throw error CredentialException")]
+        public void ThenThrowErrorCredentialException()
+        {
+            var exception = ScenarioContext.Current[nameof(CredentialException)];
+            exception.Should().BeOfType<CredentialException>();
+        }
+
+        [Then(@"the new password for (.*) should be '(.*)'")]
+        public void ThenTheNewPasswordShouleBe(long userid, string newPassword)
+        {
+            var listUser = GetListUser(LIST_USER);
+            var u = listUser.FirstOrDefault(x => x.Id == userid);
+            var encriptedPassword = PasswordContractor.GeneratePassword(newPassword, u.SecuritySalt);
+            u.Password.Should().Be(encriptedPassword);
         }
     }
 }

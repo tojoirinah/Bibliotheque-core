@@ -61,3 +61,23 @@
 		| id |
 		| 13 |
 		| 17 |
+
+	Scenario Outline: Change password user with forgotten oldpassword
+		When I enter new password <password> for selected user <userid> with the <oldpassword>
+		And I call service ChangePassword
+		Then throw error CredentialException
+
+		Examples: 
+		| userid | password     | oldpassword |
+		| 1      | '1234567'    | '12345678'  |
+		| 2      | 'test123456' | '145725'    |
+
+	Scenario Outline: Change password user with knowing oldpassword
+		When I enter new password <password> for selected user <userid> with the <oldpassword>
+		And I call service ChangePassword
+		Then the new password for <userid> should be <password>
+
+		Examples: 
+		| userid | password     | oldpassword |
+		| 1      | '1234567'    | '123456'    |
+		| 2      | 'test123456' | '123456'    |

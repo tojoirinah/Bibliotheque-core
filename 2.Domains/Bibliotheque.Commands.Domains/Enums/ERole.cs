@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace Bibliotheque.Commands.Domains.Enums
+﻿namespace Bibliotheque.Commands.Domains.Enums
 {
     public enum ERole
     {

@@ -29,8 +29,6 @@ using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 
-using Newtonsoft.Json.Serialization;
-
 namespace Bibliotheque.Api
 {
     public class Startup
@@ -53,7 +51,7 @@ namespace Bibliotheque.Api
             services.AddSwaggerGenNewtonsoftSupport();
 
             // MediatR
-            services.AddMediatR(typeof(Startup));
+             services.AddMediatR(typeof(Startup));
 
             // database
             string assemblyName = typeof(BibliothequeContext).Namespace;
@@ -111,7 +109,7 @@ namespace Bibliotheque.Api
                 c.SwaggerEndpoint("/swagger/v1/swagger.json", "My API V1");
             });
 
-          //  app.UseHttpsRedirection();
+            //  app.UseHttpsRedirection();
 
             app.UseRouting();
             app.UseCors(ALLOW_ORIGIN);
@@ -123,9 +121,9 @@ namespace Bibliotheque.Api
             {
                 endpoints.MapControllers();
             });
-          
-           // app.UseAuthentication();
-           // app.UseMvc();
+
+            // app.UseAuthentication();
+            // app.UseMvc();
         }
 
 
@@ -254,7 +252,8 @@ namespace Bibliotheque.Api
                 setup.Filters.AddService<UnitOfWorkFilter>(1);
             })
             .SetCompatibilityVersion(CompatibilityVersion.Version_2_1)
-            .AddJsonOptions(options => {
+            .AddJsonOptions(options =>
+            {
                 options.JsonSerializerOptions.PropertyNamingPolicy = null;
                 options.JsonSerializerOptions.DictionaryKeyPolicy = null;
             });

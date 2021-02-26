@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 
 using Bibliotheque.Commands.Domains.Contracts;
 
@@ -23,7 +19,7 @@ namespace Bibliotheque.Api
         {
 
             var executedContext = await next.Invoke();
-             if (executedContext.Exception == null && executedContext.Result is Microsoft.AspNetCore.Mvc.OkResult)
+            if (executedContext.Exception == null && executedContext.Result is Microsoft.AspNetCore.Mvc.OkResult)
             {
                 await _unitOfWork.CommitAsync();
             }

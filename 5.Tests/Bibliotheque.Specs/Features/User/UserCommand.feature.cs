@@ -426,6 +426,120 @@ namespace Bibliotheque.Specs.Features.User
  this.RemoveUser("17", ((string[])(null)));
 #line hidden
         }
+        
+        public virtual void ChangePasswordUserWithForgottenOldpassword(string userid, string password, string oldpassword, string[] exampleTags)
+        {
+            string[] tagsOfScenario = exampleTags;
+            System.Collections.Specialized.OrderedDictionary argumentsOfScenario = new System.Collections.Specialized.OrderedDictionary();
+            argumentsOfScenario.Add("userid", userid);
+            argumentsOfScenario.Add("password", password);
+            argumentsOfScenario.Add("oldpassword", oldpassword);
+            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Change password user with forgotten oldpassword", null, tagsOfScenario, argumentsOfScenario, this._featureTags);
+#line 65
+ this.ScenarioInitialize(scenarioInfo);
+#line hidden
+            bool isScenarioIgnored = default(bool);
+            bool isFeatureIgnored = default(bool);
+            if ((tagsOfScenario != null))
+            {
+                isScenarioIgnored = tagsOfScenario.Where(__entry => __entry != null).Where(__entry => String.Equals(__entry, "ignore", StringComparison.CurrentCultureIgnoreCase)).Any();
+            }
+            if ((this._featureTags != null))
+            {
+                isFeatureIgnored = this._featureTags.Where(__entry => __entry != null).Where(__entry => String.Equals(__entry, "ignore", StringComparison.CurrentCultureIgnoreCase)).Any();
+            }
+            if ((isScenarioIgnored || isFeatureIgnored))
+            {
+                testRunner.SkipScenario();
+            }
+            else
+            {
+                this.ScenarioStart();
+#line 66
+  testRunner.When(string.Format("I enter new password {0} for selected user {1} with the {2}", password, userid, oldpassword), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
+#line hidden
+#line 67
+  testRunner.And("I call service ChangePassword", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+#line hidden
+#line 68
+  testRunner.Then("throw error CredentialException", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
+#line hidden
+            }
+            this.ScenarioCleanup();
+        }
+        
+        [TechTalk.SpecRun.ScenarioAttribute("Change password user with forgotten oldpassword, 1", SourceLine=71)]
+        public virtual void ChangePasswordUserWithForgottenOldpassword_1()
+        {
+#line 65
+ this.ChangePasswordUserWithForgottenOldpassword("1", "\'1234567\'", "\'12345678\'", ((string[])(null)));
+#line hidden
+        }
+        
+        [TechTalk.SpecRun.ScenarioAttribute("Change password user with forgotten oldpassword, 2", SourceLine=71)]
+        public virtual void ChangePasswordUserWithForgottenOldpassword_2()
+        {
+#line 65
+ this.ChangePasswordUserWithForgottenOldpassword("2", "\'test123456\'", "\'145725\'", ((string[])(null)));
+#line hidden
+        }
+        
+        public virtual void ChangePasswordUserWithKnowingOldpassword(string userid, string password, string oldpassword, string[] exampleTags)
+        {
+            string[] tagsOfScenario = exampleTags;
+            System.Collections.Specialized.OrderedDictionary argumentsOfScenario = new System.Collections.Specialized.OrderedDictionary();
+            argumentsOfScenario.Add("userid", userid);
+            argumentsOfScenario.Add("password", password);
+            argumentsOfScenario.Add("oldpassword", oldpassword);
+            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Change password user with knowing oldpassword", null, tagsOfScenario, argumentsOfScenario, this._featureTags);
+#line 75
+ this.ScenarioInitialize(scenarioInfo);
+#line hidden
+            bool isScenarioIgnored = default(bool);
+            bool isFeatureIgnored = default(bool);
+            if ((tagsOfScenario != null))
+            {
+                isScenarioIgnored = tagsOfScenario.Where(__entry => __entry != null).Where(__entry => String.Equals(__entry, "ignore", StringComparison.CurrentCultureIgnoreCase)).Any();
+            }
+            if ((this._featureTags != null))
+            {
+                isFeatureIgnored = this._featureTags.Where(__entry => __entry != null).Where(__entry => String.Equals(__entry, "ignore", StringComparison.CurrentCultureIgnoreCase)).Any();
+            }
+            if ((isScenarioIgnored || isFeatureIgnored))
+            {
+                testRunner.SkipScenario();
+            }
+            else
+            {
+                this.ScenarioStart();
+#line 76
+  testRunner.When(string.Format("I enter new password {0} for selected user {1} with the {2}", password, userid, oldpassword), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
+#line hidden
+#line 77
+  testRunner.And("I call service ChangePassword", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+#line hidden
+#line 78
+  testRunner.Then(string.Format("the new password for {0} should be {1}", userid, password), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
+#line hidden
+            }
+            this.ScenarioCleanup();
+        }
+        
+        [TechTalk.SpecRun.ScenarioAttribute("Change password user with knowing oldpassword, 1", SourceLine=81)]
+        public virtual void ChangePasswordUserWithKnowingOldpassword_1()
+        {
+#line 75
+ this.ChangePasswordUserWithKnowingOldpassword("1", "\'1234567\'", "\'123456\'", ((string[])(null)));
+#line hidden
+        }
+        
+        [TechTalk.SpecRun.ScenarioAttribute("Change password user with knowing oldpassword, 2", SourceLine=81)]
+        public virtual void ChangePasswordUserWithKnowingOldpassword_2()
+        {
+#line 75
+ this.ChangePasswordUserWithKnowingOldpassword("2", "\'test123456\'", "\'123456\'", ((string[])(null)));
+#line hidden
+        }
     }
 }
 #pragma warning restore

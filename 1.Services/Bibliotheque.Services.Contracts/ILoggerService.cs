@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace Bibliotheque.Services.Contracts
+﻿namespace Bibliotheque.Services.Contracts
 {
     public interface ILoggerService
     {

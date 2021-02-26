@@ -2,8 +2,6 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-using Bibliotheque.Services.Implementations.Exceptions;
-
 using FluentAssertions;
 
 using TechTalk.SpecFlow;
@@ -35,25 +33,25 @@ namespace Bibliotheque.Specs.Steps.User
             ScenarioContext.Current.Add("userId", p0);
         }
 
-        
+
         [When(@"I enter exactly the '(.*)' as username")]
         public void WhenIEnterExactlyTheAsUsername(string p0)
         {
             ScenarioContext.Current.Add("username", p0);
         }
-        
+
         [Then(@"list user should count (.*)")]
         public void ThenListUserShouldCount(int p0)
         {
             _users.Should().HaveCount(p0);
         }
-        
+
         [Then(@"username should by '(.*)'")]
         public void ThenUsernameShouldBy(string p0)
         {
             _user.Login.Should().Be(p0);
         }
-        
+
         [Then(@"username in database should be '(.*)' as expected")]
         public void ThenUsernameInDatabaseShouldBeAsExpected(string p0)
         {
@@ -66,9 +64,9 @@ namespace Bibliotheque.Specs.Steps.User
             try
             {
                 var querySearch = ScenarioContext.Current["querySearch"] as string;
-                _users = await _userService.SearchUser(querySearch);
+                _users = await _userService.SearchUser(0, querySearch);
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 throw ex;
             }

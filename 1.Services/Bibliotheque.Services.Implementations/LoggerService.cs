@@ -1,10 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
+﻿
 using Bibliotheque.Services.Contracts;
-
-using log4net.Core;
 
 using Microsoft.Extensions.Logging;
 

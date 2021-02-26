@@ -6,7 +6,7 @@ namespace Bibliotheque.Services.Implementations.Exceptions
     {
         private const string error = "Wrong password";
 
-        public CredentialException():base(error)
+        public CredentialException() : base(error)
         {
 
         }

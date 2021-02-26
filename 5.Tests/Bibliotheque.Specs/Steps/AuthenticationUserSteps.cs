@@ -1,9 +1,6 @@
 ﻿using System.Threading.Tasks;
 
-using AutoFixture;
-
-using Bibliotheque.Services.Contracts;
-using Bibliotheque.Services.Contracts.Requests;
+using Bibliotheque.Services.Contracts.Requests.Auths;
 using Bibliotheque.Services.Implementations.Exceptions;
 using Bibliotheque.Specs.Steps.User;
 
@@ -19,14 +16,14 @@ namespace Bibliotheque.Specs.Steps
     public class AuthenticationUserSteps : BaseUserStep
     {
 
-        private readonly AuthReq _req = new AuthReq();
+        private readonly AuthenticationReq _req = new AuthenticationReq();
         private QUser _authenticatedUser;
 
         public AuthenticationUserSteps()
         {
         }
 
-       
+
 
 
         [Given(@"the login is '(.*)'")]
@@ -34,13 +31,13 @@ namespace Bibliotheque.Specs.Steps
         {
             _req.Login = p0;
         }
-        
+
         [Given(@"the password is '(.*)'")]
         public void GivenThePasswordIs(string p0)
         {
             _req.Password = p0;
         }
-        
+
         [When(@"calling authenciation")]
         public async Task WhenCallingAuthenciation()
         {
@@ -61,20 +58,20 @@ namespace Bibliotheque.Specs.Steps
                 ScenarioContext.Current.Add(nameof(CredentialException), ex);
             }
         }
-        
+
         [Then(@"throws uknown or disabled error")]
         public void ThenThrowsNotFoundError()
         {
             var exception = ScenarioContext.Current[nameof(UknownOrDisabledUserException)];
             exception.Should().BeOfType<UknownOrDisabledUserException>();
         }
-        
+
         [Then(@"user is null")]
         public void ThenUserIsNull()
         {
             _authenticatedUser.Should().BeNull();
         }
-        
+
         [Then(@"throws credential error")]
         public void ThenThrowsCredentialError()
         {

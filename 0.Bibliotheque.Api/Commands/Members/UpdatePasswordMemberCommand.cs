@@ -1,17 +1,12 @@
-﻿
-using Bibliotheque.Api.Req.Members;
-
-using MediatR;
+﻿using Bibliotheque.Services.Contracts.Requests.Members;
 
 namespace Bibliotheque.Api.Commands.Members
 {
-    public class UpdatePasswordMemberCommand : IRequest
+    public class UpdatePasswordMemberCommand : UpdatePasswordUserCommand
     {
-        public UpdatePasswordMemberReq Model { get; }
 
-        public UpdatePasswordMemberCommand(UpdatePasswordMemberReq model)
+        public UpdatePasswordMemberCommand(long id, UpdatePasswordMemberReq model) : base(id, model)
         {
-            Model = model;
         }
     }
 }

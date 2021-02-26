@@ -1,17 +1,13 @@
-﻿
-using Bibliotheque.Api.Req.Members;
-
-using MediatR;
+﻿using Bibliotheque.Api.Commands.Users;
+using Bibliotheque.Services.Contracts.Requests.Members;
 
 namespace Bibliotheque.Api.Commands.Members
 {
-    public class RegisterMemberCommand : IRequest
+    public class RegisterMemberCommand : RegisterUserCommand
     {
-        public RegisterMemberReq Model { get; }
 
-        public RegisterMemberCommand(RegisterMemberReq model)
+        public RegisterMemberCommand(RegisterMemberReq model) : base(model)
         {
-            Model = model;
         }
     }
 }

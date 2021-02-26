@@ -15,7 +15,7 @@ namespace Bibliotheque.Commands.Infrastructures
 
         protected Repository(IUnitOfWork unitOfWork)
         {
-            _context = (BibliothequeContext)unitOfWork.Context;
+            _context = unitOfWork.Context;
             dbSet = _context.Set<TEntity>();
         }
 

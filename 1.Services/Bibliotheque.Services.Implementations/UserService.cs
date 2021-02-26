@@ -1,21 +1,23 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
+using System.Data;
 using System.Threading.Tasks;
 
-using Bibliotheque.Services.Contracts;
-
-using CUser = Bibliotheque.Commands.Domains.Entities.User;
-using QUser = Bibliotheque.Queries.Domains.Entities.User;
-using CIRepository = Bibliotheque.Commands.Domains.Contracts.IUserRepository;
-using QIRepository = Bibliotheque.Queries.Domains.Contracts.IUserRepository;
-using Bibliotheque.Commands.Domains.Contracts;
-using Bibliotheque.Services.Contracts.Requests;
-using Bibliotheque.Transverse.Helpers;
-using Bibliotheque.Services.Implementations.Exceptions;
-using System.Data;
-using Bibliotheque.Commands.Domains.Enums;
 using AutoMapper;
+
+using Bibliotheque.Commands.Domains.Contracts;
+using Bibliotheque.Commands.Domains.Enums;
+using Bibliotheque.Services.Contracts;
+using Bibliotheque.Services.Contracts.Requests.Auths;
+using Bibliotheque.Services.Contracts.Requests.Statuses;
+using Bibliotheque.Services.Contracts.Requests.Users;
+using Bibliotheque.Services.Implementations.Exceptions;
+using Bibliotheque.Transverse.Helpers;
+
+using CIRepository = Bibliotheque.Commands.Domains.Contracts.IUserRepository;
+using CUser = Bibliotheque.Commands.Domains.Entities.User;
+using QIRepository = Bibliotheque.Queries.Domains.Contracts.IUserRepository;
+using QUser = Bibliotheque.Queries.Domains.Entities.User;
 
 namespace Bibliotheque.Services.Implementations
 {
@@ -25,18 +27,18 @@ namespace Bibliotheque.Services.Implementations
         private readonly QIRepository _queryRepository;
 
 
-        public UserService(IMapper mapper, ILoggerService loggerService , CIRepository cmdRepository, QIRepository queryRepository, IUnitOfWork uow)
-            :base(uow,mapper,loggerService)
+        public UserService(IMapper mapper, ILoggerService loggerService, CIRepository cmdRepository, QIRepository queryRepository, IUnitOfWork uow)
+            : base(uow, mapper, loggerService)
         {
             _cmdRepository = cmdRepository;
             _queryRepository = queryRepository;
         }
 
-        public async Task<QUser> Authenticate(AuthReq req)
+        public async Task<QUser> Authenticate(AuthenticationReq req)
         {
             _logger.SetDebug($"--- STARTING {System.Reflection.MethodBase.GetCurrentMethod().Name } --- \n Login : {req.Login}");
             var param = new Dapper.DynamicParameters();
-            
+
             param.Add("login", req.Login);
             var user = await _queryRepository.RetrieveOneAsync(StoredProcedure.SP_AUTHENTICATION, param, CommandType.StoredProcedure);
             if (user == null || user.StatusId == (byte)EStatus.DISABLED)
@@ -44,14 +46,14 @@ namespace Bibliotheque.Services.Implementations
                 _logger.SetError("--- UknownOrDisabledUserException --- ");
                 throw new UknownOrDisabledUserException();
             }
-                
+
 
             if (user.StatusId == (byte)EStatus.WAITING)
             {
                 _logger.SetError("--- CredentialWaitingException --- ");
                 throw new CredentialWaitingException();
             }
-                
+
 
             var encryptedPassword = PasswordContractor.GeneratePassword(req.Password, user.SecuritySalt);
             if (user.Password != encryptedPassword)
@@ -65,21 +67,22 @@ namespace Bibliotheque.Services.Implementations
             return user;
         }
 
-        public async Task ChangeUserInformationAsync(UserInformationReq req)
+        public async Task ChangeUserInformationAsync(UpdateInformationUserReq req)
         {
             _logger.SetDebug($"--- STARTING {System.Reflection.MethodBase.GetCurrentMethod().Name } --- \n UserId: {req.Id}");
             try
             {
                 var userToUpdate = await RetrieveOneUserById(req.Id);
-                if (userToUpdate == null) {
+                if (userToUpdate == null)
+                {
                     _logger.SetError("--- UserNotFoundException --- ");
                     throw new UserNotFoundException();
                 }
-                    
+
 
                 var userTopUpdateCmd = _mapper.Map<CUser>(userToUpdate);
-                userTopUpdateCmd.LastName = req.LastName;
-                userTopUpdateCmd.FirstName = req.FirstName;
+                userTopUpdateCmd.LastName = userTopUpdateCmd.LastName != req.LastName ? req.LastName : userTopUpdateCmd.LastName;
+                userTopUpdateCmd.FirstName = userTopUpdateCmd.FirstName != req.FirstName ? req.FirstName : userTopUpdateCmd.FirstName;
                 await _cmdRepository.ChangeItemAsync(userTopUpdateCmd);
             }
             catch (Exception ex)
@@ -90,7 +93,7 @@ namespace Bibliotheque.Services.Implementations
             _logger.SetDebug($"--- ENDING {System.Reflection.MethodBase.GetCurrentMethod().Name } ---");
         }
 
-        public async Task ChangeUserStatusAsync(UserStatusReq req)
+        public async Task ChangeUserPasswordAsync(UpdatePasswordUserReq req)
         {
             _logger.SetDebug($"--- STARTING {System.Reflection.MethodBase.GetCurrentMethod().Name } --- \n UserId: {req.Id}");
             try
@@ -98,13 +101,46 @@ namespace Bibliotheque.Services.Implementations
                 var userToUpdate = await RetrieveOneUserById(req.Id);
                 if (userToUpdate == null)
                 {
+                    _logger.SetError("--- UserNotFoundException --- ");
+                    throw new UserNotFoundException();
+                }
+
+                var oldEncryptedPassword = PasswordContractor.GeneratePassword(req.OldPassword, userToUpdate.SecuritySalt);
+                if(string.Compare(oldEncryptedPassword, userToUpdate.Password) != 0)
+                {
+                    throw new CredentialException();
+                }
+
+                var userTopUpdateCmd = _mapper.Map<CUser>(userToUpdate);
+
+                var securitySalt = PasswordContractor.CreateRandomPassword(8);
+                userTopUpdateCmd.Password = PasswordContractor.GeneratePassword(req.NewPassword, securitySalt);
+                userTopUpdateCmd.SecuritySalt = securitySalt;
+                await _cmdRepository.ChangeItemAsync(userTopUpdateCmd);
+            }
+            catch (Exception ex)
+            {
+                _logger.SetError($"Message : {ex.Message} \n StackTrace : {ex.StackTrace} \n InnerException : {(ex.InnerException != null ? ex.InnerException.Message : string.Empty)}");
+                throw ex;
+            }
+            _logger.SetDebug($"--- ENDING {System.Reflection.MethodBase.GetCurrentMethod().Name } ---");
+        }
+
+        public async Task ChangeUserStatusAsync(UpdateUserStatusReq req)
+        {
+            _logger.SetDebug($"--- STARTING {System.Reflection.MethodBase.GetCurrentMethod().Name } --- \n UserId: {req.UserId}");
+            try
+            {
+                var userToUpdate = await RetrieveOneUserById(req.UserId);
+                if (userToUpdate == null)
+                {
                     _logger.SetError("--- UserNotFoundException ---");
                     throw new UserNotFoundException();
                 }
-                    
+
 
                 var userTopUpdateCmd = _mapper.Map<CUser>(userToUpdate);
-                userTopUpdateCmd.StatusId = req.StatusId;
+                userTopUpdateCmd.StatusId = req.NewStatusId;
                 await _cmdRepository.ChangeItemAsync(userTopUpdateCmd);
             }
             catch (Exception ex)
@@ -126,7 +162,7 @@ namespace Bibliotheque.Services.Implementations
                     _logger.SetError("--- UserAlreadyExistsException ---");
                     throw new UserAlreadyExistsException();
                 }
-                    
+
                 await _cmdRepository.SubscribeItemAsync(userToRegister);
             }
             catch (Exception ex)
@@ -154,18 +190,20 @@ namespace Bibliotheque.Services.Implementations
             var param = new Dapper.DynamicParameters();
             param.Add("login", username);
 
-           var user =  await _queryRepository.RetrieveOneAsync(StoredProcedure.SP_AUTHENTICATION, param, System.Data.CommandType.StoredProcedure);
+
+            var user = await _queryRepository.RetrieveOneAsync(StoredProcedure.SP_AUTHENTICATION, param, System.Data.CommandType.StoredProcedure);
             _logger.SetDebug($"--- ENDING {System.Reflection.MethodBase.GetCurrentMethod().Name } ---");
             return user;
         }
 
-        public async Task<List<QUser>> SearchUser(string querySearch = "")
+        public async Task<List<QUser>> SearchUser(byte roleId, string querySearch = "")
         {
             _logger.SetDebug($"--- STARTING {System.Reflection.MethodBase.GetCurrentMethod().Name } --- \n querySearch: {querySearch}");
             var param = new Dapper.DynamicParameters();
             param.Add("criteria", querySearch);
+            param.Add("roleid", roleId);
 
-            var list =  await _queryRepository.RetrieveAllAsync(StoredProcedure.SP_SEARCH_USER, param, System.Data.CommandType.StoredProcedure);
+            var list = await _queryRepository.RetrieveAllAsync(StoredProcedure.SP_SEARCH_USER, param, System.Data.CommandType.StoredProcedure);
             _logger.SetDebug($"--- ENDING {System.Reflection.MethodBase.GetCurrentMethod().Name } ---");
             return list;
         }
@@ -176,13 +214,13 @@ namespace Bibliotheque.Services.Implementations
             try
             {
                 var qUserToRemove = await RetrieveOneUserById(userId);
-                if(qUserToRemove != null)
+                if (qUserToRemove != null)
                 {
                     var cUserToRemove = _mapper.Map<CUser>(qUserToRemove);
                     await _cmdRepository.UnsubscribeItemAsync(cUserToRemove);
                 }
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 _logger.SetError($"Message : {ex.Message} \n StackTrace : {ex.StackTrace} \n InnerException : {(ex.InnerException != null ? ex.InnerException.Message : string.Empty)}");
                 throw ex;

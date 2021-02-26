@@ -1,11 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-
-namespace Bibliotheque.Api.Req.Members
+﻿namespace Bibliotheque.Services.Contracts.Requests.Users
 {
-    public class RegisterMemberReq : IBaseReq
+    public class RegisterUserReq
     {
         public string LastName { get; set; }
 
@@ -14,5 +9,7 @@ namespace Bibliotheque.Api.Req.Members
         public string Login { get; set; }
 
         public string Password { get; set; }
+
+        public byte RoleId { get; set; }
     }
 }

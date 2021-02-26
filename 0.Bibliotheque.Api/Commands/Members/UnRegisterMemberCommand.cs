@@ -1,17 +1,13 @@
 ﻿
-using Bibliotheque.Api.Req.Members;
-
 using MediatR;
 
 namespace Bibliotheque.Api.Commands.Members
 {
-    public class UnRegisterMemberCommand : IRequest
+    public class UnRegisterMemberCommand : UnRegisterUserCommand
     {
-        public UnRegisterMemberReq Model { get; }
 
-        public UnRegisterMemberCommand(UnRegisterMemberReq model)
+        public UnRegisterMemberCommand(long id) : base(id)
         {
-            Model = model;
         }
     }
 }

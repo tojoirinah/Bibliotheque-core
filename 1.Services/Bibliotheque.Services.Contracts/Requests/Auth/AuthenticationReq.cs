@@ -1,4 +1,4 @@
-﻿namespace Bibliotheque.Api.Req.Auth
+﻿namespace Bibliotheque.Services.Contracts.Requests.Auths
 {
     public class AuthenticationReq
     {

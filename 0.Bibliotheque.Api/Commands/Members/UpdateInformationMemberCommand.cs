@@ -1,17 +1,14 @@
-﻿
-using Bibliotheque.Api.Req.Members;
+﻿using Bibliotheque.Services.Contracts.Requests.Members;
 
 using MediatR;
 
 namespace Bibliotheque.Api.Commands.Members
 {
-    public class UpdateInformationMemberCommand : IRequest
+    public class UpdateInformationMemberCommand : UpdateInformationUserCommand
     {
-        public UpdateInformationMemberReq Model { get; }
-
-        public UpdateInformationMemberCommand(UpdateInformationMemberReq model)
+        public UpdateInformationMemberCommand(long id, UpdateInformationMemberReq model) : base(id, model)
         {
-            Model = model;
+
         }
     }
 }

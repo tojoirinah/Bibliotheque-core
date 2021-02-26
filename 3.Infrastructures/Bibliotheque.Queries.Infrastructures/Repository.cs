@@ -52,6 +52,6 @@ namespace Bibliotheque.Queries.Infrastructures
             }
         }
 
-        
+
     }
 }

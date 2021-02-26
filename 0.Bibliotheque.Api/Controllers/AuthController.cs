@@ -6,8 +6,8 @@ using AutoMapper;
 
 using Bibliotheque.Api.Helpers;
 using Bibliotheque.Api.Queries.Auth;
-using Bibliotheque.Api.Req.Auth;
 using Bibliotheque.Api.Resp.Users;
+using Bibliotheque.Services.Contracts.Requests.Auths;
 using Bibliotheque.Transverse.Helpers;
 
 using MediatR;
@@ -28,24 +28,30 @@ namespace Bibliotheque.Api.Controllers
             _settings = appSettings.Value;
         }
 
-        [HttpPost("SignIn")]
-        public async Task<IActionResult> Signin([FromBody] AuthenticationReq req)
+        string GetTokenAndClaimIdentity(UserInformationResp user)
         {
-            try
-            {
-                var query = _mapper.Map<GetAuthenticationRequest>(req);
-                var user = await _mediator.Send(query);
-                var claimIdentity = new ClaimsIdentity(new Claim[] {
+            var claimIdentity = new ClaimsIdentity(new Claim[] {
                     new Claim("UserId",user.Id.ToString()),
                     new Claim("RoleId",user.Role.Id.ToString()),
                     new Claim("UserName",user.Login)
                 });
 
-                var token = JwtTokenHelper.CreateToken(
-                    claimIdentity,
-                    Int32.Parse(_settings.TokenExpireMinute),
-                    _settings.JwtSecretKey
-                    );
+            return JwtTokenHelper.CreateToken(
+                claimIdentity,
+                Int32.Parse(_settings.TokenExpireMinute),
+                _settings.JwtSecretKey
+                );
+
+
+        }
+
+        [HttpPost("SignIn")]
+        public async Task<IActionResult> Signin([FromBody] AuthenticationReq req)
+        {
+            try
+            {
+                var user = await _mediator.Send(new GetAuthenticationQuery(req));
+                var token = GetTokenAndClaimIdentity(user);
 
                 return Ok(new { Token = token });
             }
