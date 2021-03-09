@@ -2,9 +2,14 @@ name: .NET
 
 on:
   push:
-    branches: [ master, preprod, development ]
+    branches: 
+      - master
+      - preprod
+      - development
   pull_request:
-    branches: [ master, preprod ]
+    branches: 
+      - master
+      - preprod
 
 jobs:
   build:
