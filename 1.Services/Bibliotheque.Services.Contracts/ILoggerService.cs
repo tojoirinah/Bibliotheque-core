@@ -3,6 +3,6 @@
     public interface ILoggerService
     {
         void SetError(string error);
-        void SetDebug(string text);
+        void SetDebug(string text)
     }
 }
