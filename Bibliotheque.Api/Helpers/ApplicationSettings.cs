@@ -2,7 +2,7 @@
 {
     public class ApplicationSettings
     {
-        public string JwtSecretKey { get; set }
+        public string JwtSecretKey { get; set; }
         public string TokenExpireMinute { get; set; }
 
         public string ClientUrl { get; set; }
